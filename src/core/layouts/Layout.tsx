@@ -17,7 +17,7 @@ const Layout: BlitzLayout<{ title?: string; children?: React.ReactNode }> = ({
         <title>{title || "spin-the-yarn"}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="bg-gray-100 min-h-screen flex">
+      <div className="bg-neutral-100 min-h-screen flex">
         <Sidebar />
         <main className="w-[calc(100%-3.35rem)] ml-auto">
           <div className="3xl:container mx-auto space-y-6">

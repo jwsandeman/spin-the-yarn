@@ -5,14 +5,20 @@ import { useHandleKeyDown } from "src/hooks/useHandleKeyDown"
 import { useBlocksStore } from "src/store/blocksStore"
 import { usePropertyBlocksStore } from "src/store/propertyBlocksStore"
 
-// TODO add a way to visually associate a property with a block
+// TODO add wsiwyg editor options when text is highlighted
 
-export const TextBlock = ({ block, index, textBlockRefs }) => {
+export const TextBlock = ({ block, propertyBlock, index, textBlockRefs }) => {
   const { blocks, setBlocks } = useBlocksStore()
   const { propertyBlocks, setPropertyBlocks } = usePropertyBlocksStore()
   const handleBlockInput = useHandleBlockInput(blocks, setBlocks)
-  const handleKeyDown = useHandleKeyDown(blocks, propertyBlocks, setBlocks)
-  const handleArrowNavigation = useHandleArrowNavigation(textBlockRefs, blocks)
+  const handleKeyDown = useHandleKeyDown(
+    blocks,
+    propertyBlocks,
+    setBlocks,
+    setPropertyBlocks,
+    "block"
+  )
+  const handleArrowNavigation = useHandleArrowNavigation(textBlockRefs, blocks, "block")
 
   return (
     <textarea
@@ -22,7 +28,7 @@ export const TextBlock = ({ block, index, textBlockRefs }) => {
       ref={(el) => (textBlockRefs.current[block.id] = el)}
       onChange={(e) => handleBlockInput(e, block.id)}
       onKeyDown={(e) => {
-        handleKeyDown(e, block.id)
+        handleKeyDown(e, propertyBlock?.id, block.id)
         handleArrowNavigation(e, block.id)
       }}
       rows={1}

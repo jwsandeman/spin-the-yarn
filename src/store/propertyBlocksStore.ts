@@ -6,7 +6,7 @@ export type PropertyBlockType = {
   style: string
   type: string
   height?: string
-  blockId?: string
+  blockIds?: string[]
 }
 
 type PropertyBlockState = {
@@ -27,7 +27,7 @@ export const usePropertyBlocksStore = create<PropertyBlockState>((set) => ({
     {
       // auto-increment id
       id: Math.random().toString(36).substr(2, 9),
-      content: "",
+      content: "1",
       // style: "text-blue-500 bg-pink-100",
       style: "",
       type: "property",

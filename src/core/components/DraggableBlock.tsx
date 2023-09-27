@@ -4,6 +4,9 @@ import { TextBlock } from "./TextBlock"
 import { PropertyTextBlock } from "./PropertyTextBlock"
 import { PropertyBlockType, usePropertyBlocksStore } from "src/store/propertyBlocksStore"
 import { useBlocksStore } from "src/store/blocksStore"
+import { set } from "zod"
+
+// TODO - move the useEffect into the enter keydown handler so that both text and property get created at the same time. it will be easier to associate them and set the focus plus that logic doesnt really belong in this component
 
 const DRAG_TYPE = "TEXT_BLOCK"
 
@@ -59,42 +62,33 @@ export const DraggableBlock = ({ block, index, moveBlock, textBlockRefs, propert
 
   const [currentPropertyBlock, setCurrentPropertyBlock] = useState<PropertyBlockType | null>(null)
 
-  // this is causing infinite loop
   useEffect(() => {
-    const existingPropertyBlock = propertyBlocks.find(
+    const associatedPropertyBlock = propertyBlocks.find(
       (propertyBlock) => propertyBlock.id === block.propertyId
     )
+    let newPropertyBlock: PropertyBlockType | null = null
 
-    let newPropertyBlock: PropertyBlockType
-
-    if (!existingPropertyBlock) {
-      newPropertyBlock = {
-        id: Math.random().toString(36).substr(2, 9),
-        content: "",
-        style: "font-bold",
-        type: "",
-        height: "auto",
-        blockId: block.id,
-      }
-      setPropertyBlocks((prevBlocks) => [...prevBlocks, newPropertyBlock])
+    if (associatedPropertyBlock) {
+      newPropertyBlock = associatedPropertyBlock
     } else {
-      newPropertyBlock = existingPropertyBlock
-    }
-
-    setCurrentPropertyBlock(newPropertyBlock)
-
-    // Update the TextBlock to store the id of the associated PropertyTextBlock
-    setBlocks((prevBlocks) => {
-      const updatedBlocks = [...prevBlocks]
-      const currentBlock = updatedBlocks[index]
-      if (currentBlock) {
-        currentBlock.propertyId = newPropertyBlock.id
+      // else associate intial property with intial text block
+      const initialPropertyBlock = propertyBlocks[0]
+      if (initialPropertyBlock) {
+        setBlocks((prevBlocks) => {
+          const updatedBlocks = [...prevBlocks]
+          const currentBlock = updatedBlocks[index]
+          if (currentBlock) {
+            currentBlock.propertyId = initialPropertyBlock.id
+          }
+          return updatedBlocks
+        })
+        newPropertyBlock = initialPropertyBlock
       }
-      return updatedBlocks
-    })
-    // console.log("Blocks", blocks)
-    // console.log("Property Blocks", propertyBlocks)
-  }, [block, setPropertyBlocks, setBlocks, index, propertyBlocks])
+    }
+    if (newPropertyBlock) {
+      setCurrentPropertyBlock(newPropertyBlock)
+    }
+  }, [block.propertyId, index, propertyBlocks, setBlocks])
 
   return (
     <div
@@ -115,7 +109,12 @@ export const DraggableBlock = ({ block, index, moveBlock, textBlockRefs, propert
       >
         ⠿
       </span>
-      <TextBlock block={block} index={index} textBlockRefs={textBlockRefs} />
+      <TextBlock
+        block={block}
+        propertyBlock={currentPropertyBlock}
+        index={index}
+        textBlockRefs={textBlockRefs}
+      />
     </div>
   )
 }

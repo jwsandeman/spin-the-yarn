@@ -3,23 +3,36 @@ import { BlockType, useBlocksStore } from "src/store/blocksStore"
 import { PropertyBlockType } from "src/store/propertyBlocksStore"
 
 // TODO - Add back slash command to create new modal with formatting options
-// TODO - Add @ command to search for any element and link it to notes when enter is pressed
-// TODO - when pressing enter in a property it adds focus to the new property below
 // TODO - refactor this component to seperate concerns
+
+// BUG - when pressing enter in a property it doesnt add focus to the new property below
+// BUG - backspacing in a property block does not shift the focus to the property block above
+// BUG - backspacing in the first text block in the page(array) does not shift the focus to the next available text block below
+// BUG - tab doesnt work correctly for linked properties now because im currently using the property block id to set the focus and it is getting confused when there are multiple properties with the same Id
+// BUG - backspace is not working in linked properties for the same reason as above
 
 export const useHandleKeyDown = (
   blocks: BlockType[],
   propertyBlocks: PropertyBlockType[],
-  updateFunction: (blocks: BlockType[] | ((prevBlocks: BlockType[]) => BlockType[])) => void
+  setBlocks: (blocks: BlockType[] | ((prevBlocks: BlockType[]) => BlockType[])) => void,
+  setPropertyBlocks: (
+    propertyBlocks: PropertyBlockType[] | ((prevBlocks: PropertyBlockType[]) => PropertyBlockType[])
+  ) => void,
+  blockType: "block" | "property"
 ) => {
   const { setFocusIndex, focusContext, setFocusContext } = useBlocksStore()
   console.log("property blocks", propertyBlocks)
   console.log("blocks", blocks)
 
-  return (e: React.KeyboardEvent<HTMLTextAreaElement>, blockId: string) => {
+  return (
+    e: React.KeyboardEvent<HTMLTextAreaElement>,
+    propertyBlockId: string,
+    textBlockId: string
+  ) => {
+    const blockId = blockType === "block" ? textBlockId : propertyBlockId
     setFocusContext({ type: e.currentTarget.dataset.type as string, id: blockId }) // Get the type from the dataset
 
-    // On Enter Keydown
+    // ----- ENTER -----
     if (e.key === "Enter" && blockId) {
       // If "Shift" + "Enter" is pressed, allow default behavior (new line in textarea)
       if (e.shiftKey) {
@@ -27,31 +40,50 @@ export const useHandleKeyDown = (
       }
 
       // If only "Enter" is pressed, add a new block directly below the current block
-      const currentBlockIndex = blocks.find((block) => block.id === blockId)
-        ? blocks.findIndex((block) => block.id === blockId)
-        : blocks.findIndex((block) => block.propertyId === blockId)
-      console.log(
-        "current block: ",
-        blocks[currentBlockIndex],
-        "current block index: ",
-        currentBlockIndex
-      )
-      updateFunction((prevBlocks) => {
-        const newBlock = {
-          id: Math.random().toString(36).substr(2, 9),
-          content: "",
-          style: "", // Adjust as needed
-          type: "textArea", // Adjust as needed
-          propertyId: "",
-        }
+      // Create a new text block
+      const newBlock = {
+        id: Math.random().toString(36).substr(2, 9),
+        content: "",
+        style: "", // Adjust as needed
+        type: "textArea", // Adjust as needed
+        propertyId: "",
+      }
+      // Create a new property block
+      const newPropertyBlock = {
+        id: Math.random().toString(36).substr(2, 9),
+        content: "",
+        style: "font-bold",
+        type: "",
+        height: "auto",
+        blockIds: [newBlock.id],
+      }
+      // Associate the new text block with the new property block
+      newBlock.propertyId = newPropertyBlock.id
+
+      const currentBlockIndex = blocks.findIndex((block) => block.id === textBlockId)
+      setBlocks((prevBlocks) => {
         const updatedBlocks = [...prevBlocks]
-        updatedBlocks.splice(currentBlockIndex + 1, 0, newBlock) // Insert new block after current block
-        setFocusContext({ type: "block", id: newBlock.id })
+        // Insert new block after current block
+        updatedBlocks.splice(currentBlockIndex + 1, 0, newBlock)
+        console.log("blockType", blockType)
+        if (blockType === "block") {
+          setFocusContext({ type: blockType, id: newBlock.id })
+        }
         return updatedBlocks
+      })
+      setPropertyBlocks((prevPropertyBlocks) => {
+        const updatedPropertyBlocks = [...prevPropertyBlocks, newPropertyBlock]
+        if (blockType === "property") {
+          console.log("blockType", blockType)
+          // setFocusContext({ type: blockType, id: newPropertyBlock.id })
+          setFocusContext({ type: blockType, id: newBlock.id })
+        }
+        return updatedPropertyBlocks
       })
       e.preventDefault() // Prevents the default action of the enter key
     }
 
+    // ----- @ ----- THIS IS TO BE REMOVED
     // On @ Keydown - this will be used to link to other elements using a dropdown menu
     if (e.key === "@" && blockId) {
       // find all of the current property blocks and add their content to an array
@@ -63,6 +95,7 @@ export const useHandleKeyDown = (
       // if the user selects one, add the property block id to the current text block and add the text block id to the property block's array of text block Id's (this will allow for multiple text blocks to be associated with a single property block)
     }
 
+    // ----- BACKSPACE -----
     if (e.key === "Backspace" && blockId) {
       if (e.shiftKey) {
         return
@@ -81,15 +114,19 @@ export const useHandleKeyDown = (
           !propertyBlocks[currentPropertyBlockIndex]?.content &&
           !associatedTextBlock?.content
         ) {
-          updateFunction((prevBlocks) => {
+          setBlocks((prevBlocks) => {
             const updatedBlocks = [...prevBlocks]
             updatedBlocks.splice(updatedBlocks.indexOf(associatedTextBlock), 1) // Delete the associated text block
             return updatedBlocks.filter((block) => block.id !== blockId) // Delete the current property block
           })
           // need to find associated textBlock index because property block indexes arent being mapped in any order like the text blocks are
+
+          // i think this might be deleteing the text block before it can ge the previous property block id???
           const associatedTextBlockIndex = blocks.findIndex((block) => block.propertyId === blockId)
+          console.log("associatedTextBlockIndex", associatedTextBlockIndex)
           const prevPropertyBlockId = blocks[associatedTextBlockIndex - 1]?.propertyId
           if (prevPropertyBlockId) {
+            console.log("prevPropertyBlockId", prevPropertyBlockId)
             setFocusContext({ type: "block", id: prevPropertyBlockId })
           }
           e.preventDefault()
@@ -104,7 +141,7 @@ export const useHandleKeyDown = (
           !blocks[currentBlockIndex]?.content &&
           !associatedPropertyBlock?.content
         ) {
-          updateFunction((prevBlocks) => {
+          setBlocks((prevBlocks) => {
             const updatedBlocks = [...prevBlocks]
             // updatedBlocks.splice(updatedBlocks.indexOf(associatedPropertyBlock), 1) // Delete the associated property block
             updatedBlocks.splice(currentBlockIndex, 1) // Delete the current text block
@@ -119,7 +156,7 @@ export const useHandleKeyDown = (
       }
     }
 
-    // On Tab Keydown
+    // ----- TAB -----
     if (e.key === "Tab" && blockId) {
       e.preventDefault() // Prevent default tab behavior
 

@@ -1,10 +1,18 @@
-import { BlockType, useBlocksStore } from "src/store/blocksStore"
+import { useBlocksStore } from "src/store/blocksStore"
 
-// TODO add logic to allow arrow navigation between properties
+// BUG - arrow navigation is not working for preoperties as it is currently relying on index and property block indexes arent being mapped in any order like the text blocks are
 
-export const useHandleArrowNavigation = (
-  textBlockRefs: React.MutableRefObject<(HTMLTextAreaElement | null)[]>,
-  blocks: BlockType[]
+type FocusableBlock = {
+  id: string
+  content: string
+  style: string
+  type: string
+}
+
+export const useHandleArrowNavigation = <T extends FocusableBlock>(
+  blockRefs: React.MutableRefObject<(HTMLTextAreaElement | null)[]>,
+  blocks: T[],
+  blockType: "block" | "property"
 ) => {
   const { focusContext, setFocusContext } = useBlocksStore()
 
@@ -18,7 +26,7 @@ export const useHandleArrowNavigation = (
       e.preventDefault()
       const prevBlockId = blocks[currentBlockIndex - 1]?.id
       if (prevBlockId) {
-        setFocusContext({ type: "block", id: prevBlockId })
+        setFocusContext({ type: blockType, id: prevBlockId })
       }
     }
     // If Down arrow is pressed and we're at the end of the textarea, and it's not the last textarea
@@ -30,7 +38,7 @@ export const useHandleArrowNavigation = (
       e.preventDefault()
       const nextBlockId = blocks[currentBlockIndex + 1]?.id
       if (nextBlockId) {
-        setFocusContext({ type: "block", id: nextBlockId })
+        setFocusContext({ type: blockType, id: nextBlockId })
       }
     }
   }
