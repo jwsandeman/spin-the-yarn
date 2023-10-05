@@ -1,11 +1,10 @@
 import ReactDOM from "react-dom"
 import { useEffect, useState } from "react"
-import { BlockType } from "src/store/blocksStore"
+import { BlockType, useBlocksStore } from "src/store/blocksStore"
 import { PropertyBlockType } from "src/store/propertyBlocksStore"
 
 // TODO - refactor this component (especially getCaretCoordinates) into hooks to seperate concerns
-
-// BUG - when inserting and linking properties, the focus is not placed in the corresponding textarea
+// TODO - add styling to linked properties so user knows they are linked elsewhere and any changes they make will be reflected elsewhere
 
 export const useHandleLinkKeyDown = (
   blocks: BlockType[],
@@ -17,6 +16,7 @@ export const useHandleLinkKeyDown = (
   searchValue: string,
   setSearchValue: (value: string) => void
 ) => {
+  const { setFocusIndex, focusContext, setFocusContext } = useBlocksStore()
   const [isDropdownVisible, setDropdownVisible] = useState(false)
   const [dropdownPosition, setDropdownPosition] = useState({ left: 0, top: 0 })
   const [dropdownOptions, setDropdownOptions] = useState<PropertyBlockType[]>([])
@@ -89,6 +89,7 @@ export const useHandleLinkKeyDown = (
       ReactDOM.unstable_batchedUpdates(() => {
         setPropertyBlocks(filteredPropertyBlocks)
         setBlocks(updatedBlocks)
+        setFocusContext({ type: "block", id: associatedTextBlock.id })
         setSearchValue("") // Reset the search value
         setDropdownVisible(false) // Close the dropdown
       })
