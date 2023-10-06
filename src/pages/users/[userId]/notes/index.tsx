@@ -78,13 +78,15 @@ const NotesPage = () => {
   useEffect(() => {
     if (focusContext) {
       // console.log("focusContext", focusContext)
+      console.log("propertyBlocRefs", propertyBlockRefs)
       const targetElement =
         focusContext.type === "block"
           ? textBlockRefs.current[focusContext.id]
           : propertyBlockRefs.current[focusContext.id]
-      // console.log("targetElement", targetElement)
+      console.log("targetElement", targetElement)
+      console.log("focusContext", focusContext)
       targetElement?.focus()
-      setFocusContext(null) // Reset the focus context
+      // setFocusContext(null) // Reset the focus context
     }
   }, [focusContext, setFocusContext])
 

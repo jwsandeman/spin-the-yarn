@@ -66,7 +66,10 @@ export const useBlocksStore = create<BlocksState>((set) => {
     focusIndex: null,
     setFocusIndex: (index) => set({ focusIndex: index }),
     focusContext: null as FocusContext | null,
-    setFocusContext: (context: FocusContext) => set({ focusContext: context }),
+    setFocusContext: (context: FocusContext) => {
+      set({ focusContext: context })
+      console.log("focusContext", context)
+    },
     setBlocks: (blocks) =>
       set((state) => ({ blocks: typeof blocks === "function" ? blocks(state.blocks) : blocks })),
     // setPropertyBlocks: (propertyBlocks) =>

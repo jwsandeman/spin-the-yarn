@@ -52,7 +52,12 @@ export const PropertyTextBlock = ({ propertyBlock, textBlock, index, propertyBlo
         style={{ height: propertyBlock?.height }}
         className="w-1/5 min-w-[100px] max-w-[400px] resize-none bg-transparent border-none focus:outline-none textarea-xs text-neutral-600"
         value={propertyBlock?.content}
-        ref={(el) => (propertyBlockRefs.current[propertyBlock?.id] = el)}
+        ref={(el) => {
+          // propertyBlockRefs.current[propertyBlock?.id] = el
+          if (propertyBlock?.id) {
+            propertyBlockRefs.current[propertyBlock?.id] = el
+          }
+        }}
         onChange={(e) => {
           handleInputChange(e)
           handleBlockInput(e, propertyBlock?.id)

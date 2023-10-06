@@ -4,6 +4,7 @@ import { PropertyBlockType } from "src/store/propertyBlocksStore"
 
 // TODO - Add back slash command to create new dropdown menu with formatting options
 // TODO - refactor this component to seperate concerns
+// TODO - when backspacing in an empty text block it should shift focus tot he associated property block
 
 // BUG - when pressing enter in a property it doesnt add focus to the new property below
 // BUG - tab doesnt work correctly for linked properties now because im currently using the property block id to set the focus and it is getting confused when there are multiple properties with the same Id
@@ -32,8 +33,11 @@ export const useHandleKeyDown = (
     // setFocusContext({ type: e.currentTarget.dataset.type as string, id: blockId }) // Get the type from the dataset
     console.log("focusContext", focusContext)
 
-    // ----- ENTER -----
+    // ========== ENTER ========== //
+
     if (e.key === "Enter" && blockId) {
+      e.preventDefault() // Prevents the default action of the enter key
+
       // If "Shift" + "Enter" is pressed, allow default behavior (new line in textarea)
       if (e.shiftKey) {
         return
@@ -83,26 +87,17 @@ export const useHandleKeyDown = (
       // check if its a block or property then set focus context
       if (blockType === "block") {
         setFocusContext({ type: blockType, id: newBlock.id })
+        console.log("setting text block focus: ", "newBlockId", newBlock.id)
       } else {
+        console.log("blockType in property focus setter", blockType)
         setFocusContext({ type: blockType, id: newPropertyBlock.id })
+        console.log("setting property block focus: ", "newPropertyBlockId", newPropertyBlock.id)
       }
       // console.log("focusContext", focusContext)
-      e.preventDefault() // Prevents the default action of the enter key
     }
 
-    // ----- @ ----- THIS IS TO BE REMOVED
-    // On @ Keydown - this will be used to link to other elements using a dropdown menu
-    // if (e.key === "@" && blockId) {
-    //   // find all of the current property blocks and add their content to an array
-    //   const currentPropertyBlocks = propertyBlocks.filter((propertyBlock) => propertyBlock.content)
-    //   const currentPropertyBlockContents = currentPropertyBlocks.map(
-    //     (propertyBlock) => propertyBlock.content
-    //   )
-    //   // present a drop down menu that populates with the current property blocks content options and then allows the user to select one
-    //   // if the user selects one, add the property block id to the current text block and add the text block id to the property block's array of text block Id's (this will allow for multiple text blocks to be associated with a single property block)
-    // }
+    // ========== BACKSPACE ========== //
 
-    // ----- BACKSPACE -----
     if (e.key === "Backspace" && blockId) {
       if (e.shiftKey) {
         return
@@ -175,7 +170,8 @@ export const useHandleKeyDown = (
       }
     }
 
-    // ----- TAB -----
+    // ========== TAB ========== //
+
     if (e.key === "Tab" && blockId) {
       e.preventDefault() // Prevent default tab behavior
 
