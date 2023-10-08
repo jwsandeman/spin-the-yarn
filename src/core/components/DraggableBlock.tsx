@@ -102,6 +102,8 @@ export const DraggableBlock = ({ block, index, moveBlock, textBlockRefs, propert
         // index={currentPropertyBlock?.id}
         propertyBlockRefs={propertyBlockRefs}
         // className={currentPropertyBlock?.style}
+        key={`${currentPropertyBlock?.id}-${block?.id}`}
+        data-id={`${currentPropertyBlock?.id}-${block?.id}`}
       />
       <span
         className="text-gray-300 mr-2 pt-0.5 drag-icon transform hover:scale-125 transition-transform duration-200"

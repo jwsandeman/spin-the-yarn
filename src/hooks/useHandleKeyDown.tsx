@@ -1,14 +1,14 @@
-import { useState } from "react"
 import { BlockType, useBlocksStore } from "src/store/blocksStore"
 import { PropertyBlockType } from "src/store/propertyBlocksStore"
+import { useHandleFocusShift } from "./useHandleFocusShift"
 
 // TODO - Add back slash command to create new dropdown menu with formatting options
 // TODO - refactor this component to seperate concerns
-// TODO - when backspacing in an empty text block it should shift focus tot he associated property block
+// TODO - when backspacing in an empty text block it should shift focus to the associated property block
+// TODO - refactor component to use useHandleFocusShift hook where possible
 
 // BUG - when pressing enter in a property it doesnt add focus to the new property below
-// BUG - tab doesnt work correctly for linked properties now because im currently using the property block id to set the focus and it is getting confused when there are multiple properties with the same Id
-// BUG - backspace is not working in linked properties for the same reason as above
+// BUG - backspace is not working in linked properties now because im currently using the property block id to set the focus and it is getting confused when there are multiple properties with the same Id (seems to working when there is no prev property/text block. more investigation is required)
 
 export const useHandleKeyDown = (
   blocks: BlockType[],
@@ -20,6 +20,7 @@ export const useHandleKeyDown = (
   blockType: "block" | "property"
 ) => {
   const { setFocusIndex, focusContext, setFocusContext } = useBlocksStore()
+  const { handleFocusShiftToProperty, handleFocusShiftToTextBlock } = useHandleFocusShift()
   console.log("property blocks", propertyBlocks)
   console.log("blocks", blocks)
 
@@ -112,21 +113,22 @@ export const useHandleKeyDown = (
         // Current block is a property block
         const associatedTextBlock = blocks.find((block) => block.propertyId === blockId)
         const associatedTextBlockIndex = blocks.findIndex((block) => block.propertyId === blockId)
-        console.log("associatedTextBlockIndex", associatedTextBlockIndex)
-        const prevPropertyBlockId = blocks[associatedTextBlockIndex - 1]?.propertyId
-        const nextPropertyBlockId = blocks[associatedTextBlockIndex + 1]?.propertyId
+        const prevTextBlock = blocks[associatedTextBlockIndex - 1]
+        const nextTextBlock = blocks[associatedTextBlockIndex + 1]
         if (
           associatedTextBlock &&
           !propertyBlocks[currentPropertyBlockIndex]?.content &&
           !associatedTextBlock?.content &&
-          (prevPropertyBlockId || nextPropertyBlockId)
+          (prevTextBlock || nextTextBlock)
         ) {
-          if (prevPropertyBlockId) {
-            console.log("prevPropertyBlockId", prevPropertyBlockId)
-            setFocusContext({ type: "property", id: prevPropertyBlockId })
-          } else if (nextPropertyBlockId) {
-            console.log("nextPropertyBlockId", nextPropertyBlockId)
-            setFocusContext({ type: "property", id: nextPropertyBlockId })
+          if (prevTextBlock) {
+            console.log("prevTextBlockId", prevTextBlock)
+            handleFocusShiftToProperty(prevTextBlock)
+            // setFocusContext({ type: "property", id: prevPropertyBlockId })
+          } else if (nextTextBlock) {
+            console.log("nextPropertyBlockId", nextTextBlock)
+            handleFocusShiftToProperty(nextTextBlock)
+            // setFocusContext({ type: "property", id: nextPropertyBlockId })
           }
           setBlocks((prevBlocks) => {
             const updatedBlocks = [...prevBlocks]
@@ -146,13 +148,13 @@ export const useHandleKeyDown = (
         const associatedPropertyBlock = propertyBlocks.find(
           (propertyBlock) => propertyBlock.id === blocks[currentBlockIndex]?.propertyId
         )
-        const prevBlockId = blocks[currentBlockIndex - 1]?.id
-        const nextBlockId = blocks[currentBlockIndex + 1]?.id
+        const prevBlock = blocks[currentBlockIndex - 1]
+        const nextBlock = blocks[currentBlockIndex + 1]
         if (
           associatedPropertyBlock &&
           !blocks[currentBlockIndex]?.content &&
           !associatedPropertyBlock?.content &&
-          (prevBlockId || nextBlockId)
+          (prevBlock || nextBlock)
         ) {
           setBlocks((prevBlocks) => {
             const updatedBlocks = [...prevBlocks]
@@ -160,10 +162,12 @@ export const useHandleKeyDown = (
             updatedBlocks.splice(currentBlockIndex, 1) // Delete the current text block
             return updatedBlocks.filter((block) => block.id !== blockId) // Delete the current text block
           })
-          if (prevBlockId) {
-            setFocusContext({ type: "block", id: prevBlockId })
-          } else if (nextBlockId) {
-            setFocusContext({ type: "block", id: nextBlockId })
+          if (prevBlock) {
+            // setFocusContext({ type: "block", id: prevBlockId })
+            handleFocusShiftToTextBlock(prevBlock)
+          } else if (nextBlock) {
+            // setFocusContext({ type: "block", id: nextBlockId })
+            handleFocusShiftToTextBlock(nextBlock)
           }
           e.preventDefault()
         }
@@ -174,24 +178,17 @@ export const useHandleKeyDown = (
 
     if (e.key === "Tab" && blockId) {
       e.preventDefault() // Prevent default tab behavior
-
-      console.log("textblockId", textBlockId)
-      console.log("propertyBlockId", propertyBlockId)
       // Handle Shift + Tab
       if (e.shiftKey) {
         if (blocks.find((block) => block.id === blockId)) {
           // If a textBlock is focused, find the associated property block and set the focus to it
           const currentTextBlock = blocks.find((block) => block.id === blockId)
-          const associatedPropertyBlock = propertyBlocks.find(
-            (propertyBlock) => propertyBlock.id === currentTextBlock?.propertyId
-          )
-          if (associatedPropertyBlock) {
-            setFocusContext({ type: "property", id: associatedPropertyBlock.id })
+          if (currentTextBlock) {
+            handleFocusShiftToProperty(currentTextBlock)
           }
         } else if (propertyBlocks.find((propertyBlock) => propertyBlock.id === blockId)) {
           // If a property is focused, find its associated textBlock and set the focus to the previous text block
           console.log("shift+tab current blockId", blockId)
-          // const associatedTextBlockIndex = blocks.findIndex((block) => block.propertyId === blockId)
           const associatedTextBlockIndex = blocks.findIndex((block) => block.id === textBlockId)
           const prevTextBlock = blocks[associatedTextBlockIndex - 1]
           if (prevTextBlock) {
@@ -204,15 +201,11 @@ export const useHandleKeyDown = (
           // If a textBlock is focused, find the next property block and set the focus to it
           const currentTextBlockIndex = blocks.findIndex((block) => block.id === blockId)
           const nextTextBlock = blocks[currentTextBlockIndex + 1]
-          const associatedPropertyBlock = propertyBlocks.find(
-            (propertyBlock) => propertyBlock.id === nextTextBlock?.propertyId
-          )
-          if (associatedPropertyBlock) {
-            setFocusContext({ type: "property", id: associatedPropertyBlock.id })
+          if (nextTextBlock) {
+            handleFocusShiftToProperty(nextTextBlock)
           }
         } else if (propertyBlocks.find((propertyBlock) => propertyBlock.id === blockId)) {
           // If a property is focused, find its associated textBlock and set the focus to it
-          // const associatedTextBlock = blocks.find((block) => block.propertyId === blockId)
           const associatedTextBlock = blocks.find((block) => block.id === textBlockId)
           if (associatedTextBlock) {
             setFocusContext({ type: "block", id: associatedTextBlock.id })

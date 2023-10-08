@@ -51,6 +51,7 @@ export const NotesList = () => {
 }
 
 // TODO - Refactor everything to do with the editor into a seperate component so that it can be passed in here and in other pages that use the editor
+// TODO - refactor to use useHandleFocusShift hook (remove useEffect and useFocusContext)
 
 const NotesPage = () => {
   const userId = useParam("userId", "number")

@@ -68,7 +68,8 @@ export const PropertyTextBlock = ({ propertyBlock, textBlock, index, propertyBlo
           handleArrowNavigation(e, propertyBlock?.id)
         }}
         rows={1}
-        data-id={propertyBlock?.id}
+        // data-id={propertyBlock?.id}
+        data-id={`${propertyBlock?.id}-${textBlock?.id}`}
         data-type="property"
       />
       {/* Dropdown select */}

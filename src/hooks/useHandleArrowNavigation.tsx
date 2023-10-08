@@ -1,5 +1,7 @@
 import { useBlocksStore } from "src/store/blocksStore"
 
+// TODO - refactor component to use useHandleFocusShift hook where possible
+
 // BUG - arrow navigation is not working for properties as it is currently relying on index and property block indexes arent being mapped in any order like the text blocks are
 // BUG - when pressing enter in a property, the arrow navigation stops working. most likely related tot he above bug
 
