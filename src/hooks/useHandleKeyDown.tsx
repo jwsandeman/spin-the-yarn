@@ -9,6 +9,7 @@ import { useHandleFocusShift } from "./useHandleFocusShift"
 
 // BUG - when pressing enter in a property it doesnt add focus to the new property below
 // BUG - backspace is not working in linked properties now because im currently using the property block id to set the focus and it is getting confused when there are multiple properties with the same Id (seems to working when there is no prev property/text block. more investigation is required)
+// when there is no prev property and the next property is linked to the current property, both the current and next property are deleted. this looks ok at first glance but then you realise you can't type into the leftover property block because that property block was removed from the store. i need to just remove the individual instance of that property from the page and not remove the property from the store if there is more than one instance of that property on the page
 
 export const useHandleKeyDown = (
   blocks: BlockType[],
@@ -108,6 +109,9 @@ export const useHandleKeyDown = (
       const currentPropertyBlockIndex = propertyBlocks.findIndex(
         (propertyBlock) => propertyBlock.id === blockId
       )
+      const currentPropertyBlock = propertyBlocks.find(
+        (propertyBlock) => propertyBlock.id === blockId
+      )
 
       if (currentPropertyBlockIndex > -1) {
         // Current block is a property block
@@ -135,12 +139,31 @@ export const useHandleKeyDown = (
             updatedBlocks.splice(updatedBlocks.indexOf(associatedTextBlock), 1) // remove the associated text block
             return updatedBlocks.filter((block) => block.id !== blockId) // Delete the current text block from the store
           })
-          // remove associated property block from propertyBlocks array
-          setPropertyBlocks((prevPropertyBlocks) => {
-            const updatedPropertyBlocks = [...prevPropertyBlocks]
-            updatedPropertyBlocks.splice(currentPropertyBlockIndex, 1) // Delete the current property block
-            return updatedPropertyBlocks
-          })
+          // remove associated property block from propertyBlocks array if it isnt linked to another text block
+          if (currentPropertyBlock) {
+            if (currentPropertyBlock.blockIds?.length === 1) {
+              setPropertyBlocks((prevPropertyBlocks) => {
+                const updatedPropertyBlocks = [...prevPropertyBlocks]
+                updatedPropertyBlocks.splice(currentPropertyBlockIndex, 1) // Delete the current property block
+                return updatedPropertyBlocks
+              })
+            } else {
+              setPropertyBlocks((prevPropertyBlocks) => {
+                const updatedPropertyBlocks = [...prevPropertyBlocks]
+                const updatedPropertyBlock = { ...currentPropertyBlock }
+                updatedPropertyBlock.blockIds = updatedPropertyBlock.blockIds?.filter(
+                  (blockId) => blockId !== textBlockId
+                )
+                updatedPropertyBlocks.splice(currentPropertyBlockIndex, 1, updatedPropertyBlock) // Delete the current property block
+                return updatedPropertyBlocks
+              })
+            }
+          }
+          // setPropertyBlocks((prevPropertyBlocks) => {
+          //   const updatedPropertyBlocks = [...prevPropertyBlocks]
+          //   updatedPropertyBlocks.splice(currentPropertyBlockIndex, 1) // Delete the current property block
+          //   return updatedPropertyBlocks
+          // })
           e.preventDefault()
         }
       } else {
