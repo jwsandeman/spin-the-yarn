@@ -7,8 +7,8 @@ import { useHandleFocusShift } from "./useHandleFocusShift"
 // TODO - when backspacing in an empty text block it should shift focus to the associated property block
 // TODO - refactor component to use useHandleFocusShift hook where possible
 
-// BUG - when pressing enter in a property it doesnt add focus to the new property below
-// BUG - backspace is not working in linked properties now because im currently using the property block id to set the focus and it is getting confused when there are multiple properties with the same Id (seems to working when there is no prev property/text block. more investigation is required)
+// ?BUG - when pressing enter in a property it doesnt add focus to the new property below
+// ?BUG - backspace is not working in linked properties now because im currently using the property block id to set the focus and it is getting confused when there are multiple properties with the same Id (seems to working when there is no prev property/text block. more investigation is required)
 
 export const useHandleKeyDown = (
   blocks: BlockType[],

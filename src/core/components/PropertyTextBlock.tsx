@@ -18,6 +18,7 @@ export const PropertyTextBlock = ({ propertyBlock, textBlock, index, propertyBlo
   const handleBlockInput = useHandleBlockInput(propertyBlocks, setPropertyBlocks)
   const handleArrowNavigation = useHandleArrowNavigation(
     propertyBlockRefs,
+    blocks,
     propertyBlocks,
     "property"
   )
