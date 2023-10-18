@@ -61,9 +61,11 @@ const NotesPage = () => {
   const { focusPropertyId, setFocusPropertyId } = usePropertyBlocksStore()
 
   // const textBlockRefs = useRef<(HTMLTextAreaElement | null)[]>([])
-  const textBlockRefs = useRef<{ [key: string]: HTMLTextAreaElement | null }>({})
+  const [textBlockRefs, setTextBlockRefs] = useState<{ [key: string]: HTMLTextAreaElement | null }>(
+    {}
+  )
   // const propertyBlockRefs = useRef<(HTMLTextAreaElement | null)[]>([])
-  const propertyBlockRefs = useRef<{ [key: string]: HTMLTextAreaElement | null }>({})
+  const propertyBlockRefs = useState<{ [key: string]: HTMLTextAreaElement | null }>({})
 
   // const propertyBlockRefs = useRef({})
 
@@ -83,15 +85,15 @@ const NotesPage = () => {
         console.log("propertyBlocRefs", propertyBlockRefs)
         const targetElement =
           focusContext.type === "block"
-            ? textBlockRefs.current[focusContext.id]
-            : propertyBlockRefs.current[focusContext.id]
+            ? textBlockRefs[focusContext.id]
+            : propertyBlockRefs[focusContext.id]
         console.log("targetElement", targetElement)
         console.log("focusContext", focusContext)
         targetElement?.focus()
         // setFocusContext(null) // Reset the focus context
       }
     }, 0)
-  }, [focusContext, setFocusContext])
+  }, [focusContext, propertyBlockRefs, setFocusContext, textBlockRefs])
 
   if (!userId) return <div>User ID is missing</div>
 

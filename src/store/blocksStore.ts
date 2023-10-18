@@ -20,6 +20,12 @@ export type PropertyBlockType = {
   blockIds?: string[]
 }
 
+export type ReferenceBlock = {
+  id: string
+  propBlockId?: string
+  blockIds?: string[]
+}
+
 type FocusContext = {
   type: string
   id: string
@@ -70,8 +76,9 @@ export const useBlocksStore = create<BlocksState>((set) => {
       set({ focusContext: context })
       console.log("focusContext", context)
     },
-    setBlocks: (blocks) =>
-      set((state) => ({ blocks: typeof blocks === "function" ? blocks(state.blocks) : blocks })),
+    setBlocks: (blocks) => {
+      set((state) => ({ blocks: typeof blocks === "function" ? blocks(state.blocks) : blocks }))
+    },
     // setPropertyBlocks: (propertyBlocks) =>
     // set((state) => ({
     //   propertyBlocks:

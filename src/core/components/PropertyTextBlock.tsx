@@ -10,7 +10,13 @@ import { set } from "zod"
 
 // TODO add wsiwyg editor options when text is highlighted
 
-export const PropertyTextBlock = ({ propertyBlock, textBlock, index, propertyBlockRefs }) => {
+export const PropertyTextBlock = ({
+  propertyBlock,
+  textBlock,
+  index,
+  propertyBlockRefs,
+  // setPropertyBlockRefs,
+}) => {
   const { blocks, setBlocks, setFocusIndex } = useBlocksStore()
   const { propertyBlocks, setPropertyBlocks } = usePropertyBlocksStore()
   const [searchValue, setSearchValue] = useState("")
@@ -56,7 +62,16 @@ export const PropertyTextBlock = ({ propertyBlock, textBlock, index, propertyBlo
         ref={(el) => {
           // propertyBlockRefs.current[propertyBlock?.id] = el
           if (propertyBlock?.id) {
-            propertyBlockRefs.current[propertyBlock?.id] = el
+            // setPropertyBlockRefs((prevPropBlockRefs) => ({
+            //   ...prevPropBlockRefs,
+            //   [propertyBlock?.id]: el,
+            // }))
+            // {
+            //   "propertyBlock?.id 1": el1,
+            //   "propertyBlock?.id 2": el2,
+            // }
+            // propertyBlockRefs["Jason"].focus()
+            // propertyBlockRefs.current[propertyBlock?.id] = el
           }
         }}
         onChange={(e) => {
