@@ -18,7 +18,12 @@ export const TextBlock = ({ block, propertyBlock, index, textBlockRefs }) => {
     setPropertyBlocks,
     "block"
   )
-  const handleArrowNavigation = useHandleArrowNavigation(textBlockRefs, blocks, "block")
+  const handleArrowNavigation = useHandleArrowNavigation(
+    textBlockRefs,
+    blocks,
+    propertyBlocks,
+    "block"
+  )
 
   return (
     <textarea
@@ -29,7 +34,7 @@ export const TextBlock = ({ block, propertyBlock, index, textBlockRefs }) => {
       onChange={(e) => handleBlockInput(e, block.id)}
       onKeyDown={(e) => {
         handleKeyDown(e, propertyBlock?.id, block.id)
-        handleArrowNavigation(e, block.id)
+        handleArrowNavigation(e, propertyBlock.id, block.id)
       }}
       rows={1}
       data-id={block.id}

@@ -7,6 +7,8 @@ import { PropertyBlockType } from "src/store/propertyBlocksStore"
 // TODO - add styling to linked properties so user knows they are linked elsewhere and any changes they make will be reflected elsewhere
 // TODO - refactor component to use useHandleFocusShift hook where possible
 
+// !BUG - Down arrow when dropdown is visible is changing focus to the next property below instead of cycling through the dropdown options. up arrow still works correctly.
+
 export const useHandleLinkKeyDown = (
   blocks: BlockType[],
   propertyBlocks: PropertyBlockType[],

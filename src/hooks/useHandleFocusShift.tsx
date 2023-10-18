@@ -9,6 +9,7 @@ export const useHandleFocusShift = () => {
     setFocusContext({ type: "property", id: targetPropertyId })
 
     const targetElement = document.querySelector(`[data-id="${targetPropertyId}"]`)
+    console.log(targetElement)
     if (targetElement && "focus" in targetElement) {
       ;(targetElement as HTMLElement).focus()
     }

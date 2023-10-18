@@ -7,7 +7,6 @@ import { useHandleFocusShift } from "./useHandleFocusShift"
 // TODO - when backspacing in an empty text block it should shift focus to the associated property block
 // TODO - refactor component to use useHandleFocusShift hook where possible
 
-// ?BUG - when pressing enter in a property it doesnt add focus to the new property below
 // ?BUG - backspace is not working in linked properties now because im currently using the property block id to set the focus and it is getting confused when there are multiple properties with the same Id (seems to working when there is no prev property/text block. more investigation is required)
 
 export const useHandleKeyDown = (
@@ -100,28 +99,43 @@ export const useHandleKeyDown = (
     // ========== BACKSPACE ========== //
 
     if (e.key === "Backspace" && blockId) {
+      e.preventDefault()
+
       if (e.shiftKey) {
         return
       }
 
-      const currentBlockIndex = blocks.findIndex((block) => block.id === blockId)
-      const currentPropertyBlockIndex = propertyBlocks.findIndex(
-        (propertyBlock) => propertyBlock.id === blockId
-      )
-      const currentPropertyBlock = propertyBlocks.find(
-        (propertyBlock) => propertyBlock.id === blockId
-      )
+      // const currentBlockIndex = blocks.findIndex((block) => block.id === blockId)
+      const currentTextBlockIndex = blocks.findIndex((block) => block.id === textBlockId)
+      const currentTextBlock = blocks.find((block) => block.propertyId === textBlockId)
+      const prevTextBlock = blocks[currentTextBlockIndex - 1]
+      const nextTextBlock = blocks[currentTextBlockIndex + 1]
 
-      if (currentPropertyBlockIndex > -1) {
+      // const currentPropertyBlock = propertyBlocks.find(
+      //   (propertyBlock) => propertyBlock.id === propertyBlockId
+      // )
+      const currentPropertyBlock = document.querySelector(
+        `[data-id="${currentTextBlock?.propertyId}-${currentTextBlock?.id}"]`
+      )
+        ? prevTextBlock
+        : null
+      console.log(currentPropertyBlock)
+      // const currentPropertyBlockIndex = propertyBlocks.findIndex(
+      //   (propertyBlock) => propertyBlock.id === blockId
+      // )
+      // const currentPropertyBlock = propertyBlocks.find(
+      //   (propertyBlock) => propertyBlock.id === blockId
+      // )
+
+      // if (currentPropertyBlockIndex > -1) {
+      if (blockType === "property") {
         // Current block is a property block
-        const associatedTextBlock = blocks.find((block) => block.propertyId === blockId)
-        const associatedTextBlockIndex = blocks.findIndex((block) => block.propertyId === blockId)
-        const prevTextBlock = blocks[associatedTextBlockIndex - 1]
-        const nextTextBlock = blocks[associatedTextBlockIndex + 1]
+        // const associatedTextBlockIndex = blocks.findIndex((block) => block.propertyId === blockId)
         if (
-          associatedTextBlock &&
+          // associatedTextBlock &&
+          currentTextBlock &&
           !propertyBlocks[currentPropertyBlockIndex]?.content &&
-          !associatedTextBlock?.content &&
+          !currentTextBlock?.content &&
           (prevTextBlock || nextTextBlock)
         ) {
           if (prevTextBlock) {
@@ -163,7 +177,6 @@ export const useHandleKeyDown = (
           //   updatedPropertyBlocks.splice(currentPropertyBlockIndex, 1) // Delete the current property block
           //   return updatedPropertyBlocks
           // })
-          e.preventDefault()
         }
       } else {
         // Current block is a text block

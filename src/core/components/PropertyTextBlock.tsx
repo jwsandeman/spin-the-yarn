@@ -66,7 +66,7 @@ export const PropertyTextBlock = ({ propertyBlock, textBlock, index, propertyBlo
         onKeyDown={(e) => {
           handleKeyDown(e, propertyBlock?.id, textBlock?.id)
           handleLinkKeyDown(e, propertyBlock?.id)
-          handleArrowNavigation(e, propertyBlock?.id)
+          handleArrowNavigation(e, propertyBlock?.id, textBlock?.id)
         }}
         rows={1}
         // data-id={propertyBlock?.id}
