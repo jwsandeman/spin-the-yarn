@@ -2,11 +2,13 @@ import React, { useEffect, useMemo, useRef, useState } from "react"
 import { useDrag, useDrop } from "react-dnd"
 import { TextBlock } from "./TextBlock"
 import { PropertyTextBlock } from "./PropertyTextBlock"
-import { PropertyBlockType, usePropertyBlocksStore } from "src/store/propertyBlocksStore"
-import { useBlocksStore } from "src/store/blocksStore"
+import { PropertyBlockType, usePropertyBlocksStore } from "src/store/propertyBlockStore"
+import { useTextBlocksStore } from "src/store/textBlockStore"
 import { set } from "zod"
 
 // TODO - move the useEffect into the enter keydown handler so that both text and property get created at the same time. it will be easier to associate them and set the focus plus that logic doesnt really belong in this component
+
+// ?BUG/TODO Convert textBlockRefs and propertyBlockRefs to Rossis new useState format in all affected components
 
 const DRAG_TYPE = "TEXT_BLOCK"
 
@@ -19,11 +21,19 @@ type DropCollectedProps = {
   isOver: boolean
 }
 
-export const DraggableBlock = ({ block, index, moveBlock, textBlockRefs, propertyBlockRefs }) => {
+export const DraggableBlock = ({
+  block,
+  index,
+  moveBlock,
+  // setTextBlockRefs,
+  textBlockRefs,
+  // setPropertyBlockRefs,
+  propertyBlockRefs,
+}) => {
   // export const DraggableBlock = ({ block, index, moveBlock, textBlockRefs }) => {
   const ref = useRef(null)
   const { propertyBlocks, setPropertyBlocks } = usePropertyBlocksStore()
-  const { blocks, setBlocks } = useBlocksStore()
+  const { textBlocks, setTextBlocks } = useTextBlocksStore()
 
   // Drop logic
   const [{ isOver }, drop] = useDrop<DragItem, any, DropCollectedProps>({
@@ -74,11 +84,11 @@ export const DraggableBlock = ({ block, index, moveBlock, textBlockRefs, propert
       // else associate intial property with intial text block
       const initialPropertyBlock = propertyBlocks[0]
       if (initialPropertyBlock) {
-        setBlocks((prevBlocks) => {
+        setTextBlocks((prevBlocks) => {
           const updatedBlocks = [...prevBlocks]
           const currentBlock = updatedBlocks[index]
           if (currentBlock) {
-            currentBlock.propertyId = initialPropertyBlock.id
+            currentBlock.propertyBlockId = initialPropertyBlock.id
           }
           return updatedBlocks
         })
@@ -88,7 +98,7 @@ export const DraggableBlock = ({ block, index, moveBlock, textBlockRefs, propert
     if (newPropertyBlock) {
       setCurrentPropertyBlock(newPropertyBlock)
     }
-  }, [block.propertyId, index, propertyBlocks, setBlocks])
+  }, [block.propertyId, index, propertyBlocks, setTextBlocks])
 
   return (
     <div
@@ -100,6 +110,7 @@ export const DraggableBlock = ({ block, index, moveBlock, textBlockRefs, propert
         textBlock={block}
         index={index}
         // index={currentPropertyBlock?.id}
+        // setPropertyBlockRefs={setPropertyBlockRefs}
         propertyBlockRefs={propertyBlockRefs}
         // className={currentPropertyBlock?.style}
         key={`${currentPropertyBlock?.id}-${block?.id}`}
@@ -112,9 +123,10 @@ export const DraggableBlock = ({ block, index, moveBlock, textBlockRefs, propert
         ⠿
       </span>
       <TextBlock
-        block={block}
+        textBlock={block}
         propertyBlock={currentPropertyBlock}
         index={index}
+        // setTextBlockRefs={setTextBlockRefs}
         textBlockRefs={textBlockRefs}
       />
     </div>

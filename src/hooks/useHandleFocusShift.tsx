@@ -1,8 +1,9 @@
 import React from "react"
-import { BlockType, PropertyBlockType, useBlocksStore } from "src/store/blocksStore"
+import { BlockType, useBlocksStore } from "src/store/textBlockStore"
+import { useFocusStore } from "src/store/focusStore"
 
 export const useHandleFocusShift = () => {
-  const { setFocusContext } = useBlocksStore()
+  const { setFocusContext } = useFocusStore()
 
   const handleFocusShiftToProperty = (block: BlockType) => {
     const targetPropertyId = `${block.propertyId}-${block.id}`

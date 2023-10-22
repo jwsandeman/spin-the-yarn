@@ -2,42 +2,51 @@ import React, { useEffect, useRef, useState } from "react"
 import { useHandleArrowNavigation } from "src/hooks/useHandleArrowNavigation"
 import { useHandleBlockInput } from "src/hooks/useHandleBlockInput"
 import { useHandleKeyDown } from "src/hooks/useHandleKeyDown"
-import { useBlocksStore } from "src/store/blocksStore"
-import { usePropertyBlocksStore } from "src/store/propertyBlocksStore"
+import { useTextBlocksStore } from "src/store/textBlockStore"
+import { usePropertyBlocksStore } from "src/store/propertyBlockStore"
 
 // TODO add wsiwyg editor options when text is highlighted
 
-export const TextBlock = ({ block, propertyBlock, index, textBlockRefs }) => {
-  const { blocks, setBlocks } = useBlocksStore()
+export const TextBlock = ({ textBlock, propertyBlock, index, textBlockRefs }) => {
+  const { textBlocks, setTextBlocks } = useTextBlocksStore()
   const { propertyBlocks, setPropertyBlocks } = usePropertyBlocksStore()
-  const handleBlockInput = useHandleBlockInput(blocks, setBlocks)
+  const handleBlockInput = useHandleBlockInput(textBlocks, setTextBlocks)
   const handleKeyDown = useHandleKeyDown(
-    blocks,
+    textBlocks,
     propertyBlocks,
-    setBlocks,
+    setTextBlocks,
     setPropertyBlocks,
     "block"
   )
   const handleArrowNavigation = useHandleArrowNavigation(
+    // setTextBlockRefs,
     textBlockRefs,
-    blocks,
+    textBlocks,
     propertyBlocks,
     "block"
   )
 
   return (
     <textarea
-      style={{ height: block.height }}
+      style={{ height: textBlock.height }}
       className="w-full resize-none bg-transparent border-none focus:outline-none textarea-xs text-neutral-600"
-      value={block.content}
-      ref={(el) => (textBlockRefs.current[block.id] = el)}
-      onChange={(e) => handleBlockInput(e, block.id)}
+      value={textBlock.content}
+      ref={(el) => (textBlockRefs.current[textBlock.id] = el)}
+      // ref={(el) => {
+      //   if (textBlock?.id) {
+      //     setTextBlockRefs((prevTextBlocks) => ({
+      //       ...prevTextBlocks,
+      //       [textBlock?.id]: el,
+      //     }))
+      //   }
+      // }}
+      onChange={(e) => handleBlockInput(e, textBlock.id)}
       onKeyDown={(e) => {
-        handleKeyDown(e, propertyBlock?.id, block.id)
-        handleArrowNavigation(e, propertyBlock.id, block.id)
+        handleKeyDown(e, propertyBlock?.id, textBlock.id)
+        handleArrowNavigation(e, propertyBlock.id, textBlock.id)
       }}
       rows={1}
-      data-id={block.id}
+      data-id={textBlock.id}
       data-type="block"
     />
   )

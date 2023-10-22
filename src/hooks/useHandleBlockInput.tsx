@@ -1,5 +1,5 @@
 import React from "react"
-import { BlockType, useBlocksStore } from "src/store/blocksStore"
+import { BlockType, useBlocksStore } from "src/store/textBlockStore"
 
 export const useHandleBlockInput = (
   blocks: BlockType[],

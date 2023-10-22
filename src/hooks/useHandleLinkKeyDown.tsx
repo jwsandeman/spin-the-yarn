@@ -1,7 +1,8 @@
 import ReactDOM from "react-dom"
 import { useEffect, useState } from "react"
-import { BlockType, useBlocksStore } from "src/store/blocksStore"
-import { PropertyBlockType } from "src/store/propertyBlocksStore"
+import { TextBlockType, useTextBlocksStore } from "src/store/textBlockStore"
+import { PropertyBlockType } from "src/store/propertyBlockStore"
+import { useFocusStore } from "src/store/focusStore"
 
 // TODO - refactor this component (especially getCaretCoordinates) into hooks to seperate concerns
 // TODO - add styling to linked properties so user knows they are linked elsewhere and any changes they make will be reflected elsewhere
@@ -10,16 +11,18 @@ import { PropertyBlockType } from "src/store/propertyBlocksStore"
 // !BUG - Down arrow when dropdown is visible is changing focus to the next property below instead of cycling through the dropdown options. up arrow still works correctly.
 
 export const useHandleLinkKeyDown = (
-  blocks: BlockType[],
+  textBlocks: TextBlockType[],
   propertyBlocks: PropertyBlockType[],
-  setBlocks: (blocks: BlockType[] | ((prevBlocks: BlockType[]) => BlockType[])) => void,
+  setTextBlocks: (
+    blocks: TextBlockType[] | ((prevBlocks: TextBlockType[]) => TextBlockType[])
+  ) => void,
   setPropertyBlocks: (
-    propertyBlocks: PropertyBlockType[] | ((prevBlocks: BlockType[]) => BlockType[])
+    propertyBlocks: PropertyBlockType[] | ((prevBlocks: PropertyBlockType[]) => PropertyBlockType[])
   ) => void,
   searchValue: string,
   setSearchValue: (value: string) => void
 ) => {
-  const { setFocusIndex, focusContext, setFocusContext } = useBlocksStore()
+  const { setFocusIndex, focusContext, setFocusContext } = useFocusStore()
   const [isDropdownVisible, setDropdownVisible] = useState(false)
   const [dropdownPosition, setDropdownPosition] = useState({ left: 0, top: 0 })
   const [dropdownOptions, setDropdownOptions] = useState<PropertyBlockType[]>([])
@@ -66,7 +69,9 @@ export const useHandleLinkKeyDown = (
     const currentPropertyBlock = propertyBlocks.find(
       (propertyBlock) => propertyBlock.id === propertyBlockId
     )
-    const associatedTextBlock = blocks.find((block) => block.propertyId === propertyBlockId)
+    const associatedTextBlock = textBlocks.find(
+      (block) => block.propertyBlockId === propertyBlockId
+    )
 
     if (currentPropertyBlock && associatedTextBlock) {
       // Add the text block Id to the selected propertyBlock blockIds array
@@ -79,7 +84,7 @@ export const useHandleLinkKeyDown = (
           : propertyBlock
       )
       // Add the property block id to the text block
-      const updatedBlocks = blocks.map((block) =>
+      const updatedBlocks = textBlocks.map((block) =>
         block.id === associatedTextBlock.id
           ? { ...block, propertyId: selectedPropertyBlock.id }
           : block
@@ -91,7 +96,7 @@ export const useHandleLinkKeyDown = (
 
       ReactDOM.unstable_batchedUpdates(() => {
         setPropertyBlocks(filteredPropertyBlocks)
-        setBlocks(updatedBlocks)
+        setTextBlocks(updatedBlocks)
         setFocusContext({ type: "block", id: associatedTextBlock.id })
         setSearchValue("") // Reset the search value
         setDropdownVisible(false) // Close the dropdown

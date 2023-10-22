@@ -1,6 +1,7 @@
-import { BlockType, useBlocksStore } from "src/store/blocksStore"
-import { PropertyBlockType } from "src/store/propertyBlocksStore"
+import { BlockType, useBlocksStore } from "src/store/textBlockStore"
+import { PropertyBlockType } from "src/store/propertyBlockStore"
 import { useHandleFocusShift } from "./useHandleFocusShift"
+import { useFocusStore } from "src/store/focusStore"
 
 // TODO - Add back slash command to create new dropdown menu with formatting options
 // TODO - refactor this component to seperate concerns
@@ -18,10 +19,12 @@ export const useHandleKeyDown = (
   ) => void,
   blockType: "block" | "property"
 ) => {
-  const { setFocusIndex, focusContext, setFocusContext } = useBlocksStore()
+  const { setFocusIndex, focusContext, setFocusContext } = useFocusStore()
   const { handleFocusShiftToProperty, handleFocusShiftToTextBlock } = useHandleFocusShift()
   // console.log("property blocks", propertyBlocks)
   // console.log("blocks", blocks)
+
+  // ?BUG/TODO Convert textBlockRefs and propertyBlockRefs to Rossis new useState format in all affected components
 
   return (
     e: React.KeyboardEvent<HTMLTextAreaElement>,

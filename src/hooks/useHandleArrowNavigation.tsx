@@ -1,6 +1,9 @@
-import { BlockType, useBlocksStore } from "src/store/blocksStore"
+import { TextBlockType, useTextBlocksStore } from "src/store/textBlockStore"
 import { useHandleFocusShift } from "./useHandleFocusShift"
-import { PropertyBlockType } from "src/store/propertyBlocksStore"
+import { PropertyBlockType } from "src/store/propertyBlockStore"
+import { useFocusStore } from "src/store/focusStore"
+
+// ?BUG/TODO Convert textBlockRefs and propertyBlockRefs to Rossis new useState format in all affected components
 
 type FocusableBlock = {
   id: string
@@ -10,12 +13,12 @@ type FocusableBlock = {
 }
 
 export const useHandleArrowNavigation = (
-  blockRefs: React.MutableRefObject<(HTMLTextAreaElement | null)[]>,
-  blocks: BlockType[],
+  setTextBlockRefs: React.MutableRefObject<(HTMLTextAreaElement | null)[]>,
+  blocks: TextBlockType[],
   propertyBlocks: PropertyBlockType[],
   blockType: "block" | "property"
 ) => {
-  const { focusContext, setFocusContext } = useBlocksStore()
+  const { focusContext, setFocusContext } = useFocusStore()
   const { handleFocusShiftToProperty, handleFocusShiftToTextBlock } = useHandleFocusShift()
 
   return (

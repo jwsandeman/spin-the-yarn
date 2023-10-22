@@ -3,12 +3,15 @@ import { useHandleArrowNavigation } from "src/hooks/useHandleArrowNavigation"
 import { useHandleBlockInput } from "src/hooks/useHandleBlockInput"
 import { useHandleKeyDown } from "src/hooks/useHandleKeyDown"
 import { useHandleLinkKeyDown } from "src/hooks/useHandleLinkKeyDown"
-import { useBlocksStore } from "src/store/blocksStore"
-import { usePropertyBlocksStore } from "src/store/propertyBlocksStore"
+import { useTextBlocksStore } from "src/store/textBlockStore"
+import { usePropertyBlocksStore } from "src/store/propertyBlockStore"
 import { LinkDropdownMenu } from "./LinkDropdownMenu"
 import { set } from "zod"
+import { useFocusStore } from "src/store/focusStore"
 
 // TODO add wsiwyg editor options when text is highlighted
+
+// ?BUG/TODO Convert textBlockRefs and propertyBlockRefs to Rossis new useState format in all affected components
 
 export const PropertyTextBlock = ({
   propertyBlock,
@@ -17,21 +20,23 @@ export const PropertyTextBlock = ({
   propertyBlockRefs,
   // setPropertyBlockRefs,
 }) => {
-  const { blocks, setBlocks, setFocusIndex } = useBlocksStore()
+  const { textBlocks, setTextBlocks } = useTextBlocksStore()
+  const { setFocusIndex } = useFocusStore()
   const { propertyBlocks, setPropertyBlocks } = usePropertyBlocksStore()
   const [searchValue, setSearchValue] = useState("")
 
   const handleBlockInput = useHandleBlockInput(propertyBlocks, setPropertyBlocks)
   const handleArrowNavigation = useHandleArrowNavigation(
+    // setPropertyBlockRefs,
     propertyBlockRefs,
-    blocks,
+    textBlocks,
     propertyBlocks,
     "property"
   )
   const handleKeyDown = useHandleKeyDown(
-    blocks,
+    textBlocks,
     propertyBlocks,
-    setBlocks,
+    setTextBlocks,
     setPropertyBlocks,
     "property"
   )
@@ -45,9 +50,9 @@ export const PropertyTextBlock = ({
     dropdownOptions,
     activeOptionIndex,
   } = useHandleLinkKeyDown(
-    blocks,
+    textBlocks,
     propertyBlocks,
-    setBlocks,
+    setTextBlocks,
     setPropertyBlocks,
     searchValue,
     setSearchValue
@@ -60,19 +65,19 @@ export const PropertyTextBlock = ({
         className="w-1/5 min-w-[100px] max-w-[400px] resize-none bg-transparent border-none focus:outline-none textarea-xs text-neutral-600"
         value={propertyBlock?.content}
         ref={(el) => {
+          propertyBlockRefs.current[propertyBlock?.id] = el
+          // if (propertyBlock?.id) {
+          //   setPropertyBlockRefs((prevPropBlockRefs) => ({
+          //     ...prevPropBlockRefs,
+          //     [propertyBlock?.id]: el,
+          //   }))
+          // {
+          //   "propertyBlock?.id 1": el1,
+          //   "propertyBlock?.id 2": el2,
+          // }
+          // propertyBlockRefs["Jason"].focus()
           // propertyBlockRefs.current[propertyBlock?.id] = el
-          if (propertyBlock?.id) {
-            // setPropertyBlockRefs((prevPropBlockRefs) => ({
-            //   ...prevPropBlockRefs,
-            //   [propertyBlock?.id]: el,
-            // }))
-            // {
-            //   "propertyBlock?.id 1": el1,
-            //   "propertyBlock?.id 2": el2,
-            // }
-            // propertyBlockRefs["Jason"].focus()
-            // propertyBlockRefs.current[propertyBlock?.id] = el
-          }
+          // }
         }}
         onChange={(e) => {
           handleInputChange(e)

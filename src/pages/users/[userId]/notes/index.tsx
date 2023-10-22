@@ -9,8 +9,10 @@ import { useRouter } from "next/router"
 import Layout from "src/core/layouts/Layout"
 import getNotes from "src/notes/queries/getNotes"
 import { DraggableBlock } from "src/core/components/DraggableBlock"
-import { useBlocksStore } from "src/store/blocksStore"
-import { usePropertyBlocksStore } from "src/store/propertyBlocksStore"
+import { useTextBlocksStore } from "src/store/textBlockStore"
+import { usePropertyBlocksStore } from "src/store/propertyBlockStore"
+import { useFocusStore } from "src/store/focusStore"
+import { initializeBlockStores } from "src/store/initialiseBlockStores"
 
 const ITEMS_PER_PAGE = 100
 
@@ -53,46 +55,52 @@ export const NotesList = () => {
 // TODO - Refactor everything to do with the editor into a seperate component so that it can be passed in here and in other pages that use the editor
 // TODO - refactor to use useHandleFocusShift hook (remove useEffect and useFocusContext)
 
+// ?BUG/TODO Convert textBlockRefs and propertyBlockRefs to Rossis new useState format in all affected components
+
 const NotesPage = () => {
   const userId = useParam("userId", "number")
 
-  const { blocks, setBlocks, focusIndex, setFocusIndex, focusContext, setFocusContext } =
-    useBlocksStore()
-  const { focusPropertyId, setFocusPropertyId } = usePropertyBlocksStore()
+  const { textBlocks, setTextBlocks } = useTextBlocksStore()
+  const { focusIndex, setFocusIndex, focusContext, setFocusContext } = useFocusStore()
 
-  // const textBlockRefs = useRef<(HTMLTextAreaElement | null)[]>([])
-  const [textBlockRefs, setTextBlockRefs] = useState<{ [key: string]: HTMLTextAreaElement | null }>(
-    {}
-  )
-  // const propertyBlockRefs = useRef<(HTMLTextAreaElement | null)[]>([])
-  const propertyBlockRefs = useState<{ [key: string]: HTMLTextAreaElement | null }>({})
-
-  // const propertyBlockRefs = useRef({})
+  const textBlockRefs = useRef<(HTMLTextAreaElement | null)[]>([])
+  // const [textBlockRefs, setTextBlockRefs] = useState<{
+  //   [key: string]: HTMLTextAreaElement | null
+  // }>({})
+  const propertyBlockRefs = useRef<(HTMLTextAreaElement | null)[]>([])
+  // const [propertyBlockRefs, setPropertyBlockRefs] = useState<{
+  //   [key: string]: HTMLTextAreaElement | null
+  // }>({})
 
   const moveBlock = (fromIndex: number, toIndex: number) => {
-    const updatedBlocks = [...blocks]
+    const updatedBlocks = [...textBlocks]
     const [movedBlock] = updatedBlocks.splice(fromIndex, 1)
     if (movedBlock) {
       updatedBlocks.splice(toIndex, 0, movedBlock)
-      setBlocks(updatedBlocks)
+      setTextBlocks(updatedBlocks)
     }
   }
 
   useEffect(() => {
-    setTimeout(() => {
-      if (focusContext) {
-        console.log("focusContext index.tsx", focusContext)
-        console.log("propertyBlocRefs", propertyBlockRefs)
-        const targetElement =
-          focusContext.type === "block"
-            ? textBlockRefs[focusContext.id]
-            : propertyBlockRefs[focusContext.id]
-        console.log("targetElement", targetElement)
-        console.log("focusContext", focusContext)
-        targetElement?.focus()
-        // setFocusContext(null) // Reset the focus context
-      }
-    }, 0)
+    initializeBlockStores()
+  }, [])
+
+  useEffect(() => {
+    // setTimeout(() => {
+    if (focusContext) {
+      console.log("focusContext index.tsx", focusContext)
+      console.log("propertyBlocRefs", propertyBlockRefs)
+      console.log("textBlocRefs", textBlockRefs)
+      const targetElement =
+        focusContext.type === "block"
+          ? textBlockRefs.current[focusContext.id]
+          : propertyBlockRefs.current[focusContext.id]
+      console.log("targetElement", targetElement)
+      console.log("focusContext", focusContext)
+      targetElement?.focus()
+      // setFocusContext(null) // Reset the focus context
+    }
+    // }, 0)
   }, [focusContext, propertyBlockRefs, setFocusContext, textBlockRefs])
 
   if (!userId) return <div>User ID is missing</div>
@@ -109,13 +117,15 @@ const NotesPage = () => {
         </p> */}
         <Suspense fallback={<div>Loading...</div>}>
           {/* <NotesList /> */}
-          {blocks.map((block, index) => (
+          {textBlocks.map((block, index) => (
             <DraggableBlock
               key={block.id}
               block={block}
-              index={blocks.findIndex((b) => b.id === block.id)}
+              index={textBlocks.findIndex((b) => b.id === block.id)}
               moveBlock={moveBlock}
+              // setTextBlockRefs={setTextBlockRefs}
               textBlockRefs={textBlockRefs}
+              // setPropertyBlockRefs={setPropertyBlockRefs}
               propertyBlockRefs={propertyBlockRefs}
             />
           ))}
