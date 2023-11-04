@@ -1,14 +1,7 @@
-import React, { useEffect, useMemo, useRef, useState } from "react"
+import React, { useRef } from "react"
 import { useDrag, useDrop } from "react-dnd"
-import { TextBlock } from "./TextBlock"
-import { PropertyTextBlock } from "./PropertyTextBlock"
-import { PropertyBlockType, usePropertyBlocksStore } from "src/store/propertyBlockStore"
-import { useTextBlocksStore } from "src/store/textBlockStore"
-import { set } from "zod"
-
-// TODO - move the useEffect into the enter keydown handler so that both text and property get created at the same time. it will be easier to associate them and set the focus plus that logic doesnt really belong in this component
-
-// ?BUG/TODO Convert textBlockRefs and propertyBlockRefs to Rossis new useState format in all affected components
+import { EntryBlock } from "./EntryBlock"
+import { PropertyBlock } from "./PropertyBlock"
 
 const DRAG_TYPE = "TEXT_BLOCK"
 
@@ -21,19 +14,8 @@ type DropCollectedProps = {
   isOver: boolean
 }
 
-export const DraggableBlock = ({
-  block,
-  index,
-  moveBlock,
-  // setTextBlockRefs,
-  textBlockRefs,
-  // setPropertyBlockRefs,
-  propertyBlockRefs,
-}) => {
-  // export const DraggableBlock = ({ block, index, moveBlock, textBlockRefs }) => {
+export const DraggableBlock = ({ propertyBlock, index, moveBlock }) => {
   const ref = useRef(null)
-  const { propertyBlocks, setPropertyBlocks } = usePropertyBlocksStore()
-  const { textBlocks, setTextBlocks } = useTextBlocksStore()
 
   // Drop logic
   const [{ isOver }, drop] = useDrop<DragItem, any, DropCollectedProps>({
@@ -70,65 +52,19 @@ export const DraggableBlock = ({
     ? "shadow-lg transform transition-transform duration-200" // This is the class when a draggable item is hovering
     : ""
 
-  const [currentPropertyBlock, setCurrentPropertyBlock] = useState<PropertyBlockType | null>(null)
-
-  useEffect(() => {
-    const associatedPropertyBlock = propertyBlocks.find(
-      (propertyBlock) => propertyBlock.id === block.propertyId
-    )
-    let newPropertyBlock: PropertyBlockType | null = null
-
-    if (associatedPropertyBlock) {
-      newPropertyBlock = associatedPropertyBlock
-    } else {
-      // else associate intial property with intial text block
-      const initialPropertyBlock = propertyBlocks[0]
-      if (initialPropertyBlock) {
-        setTextBlocks((prevBlocks) => {
-          const updatedBlocks = [...prevBlocks]
-          const currentBlock = updatedBlocks[index]
-          if (currentBlock) {
-            currentBlock.propertyBlockId = initialPropertyBlock.id
-          }
-          return updatedBlocks
-        })
-        newPropertyBlock = initialPropertyBlock
-      }
-    }
-    if (newPropertyBlock) {
-      setCurrentPropertyBlock(newPropertyBlock)
-    }
-  }, [block.propertyId, index, propertyBlocks, setTextBlocks])
-
   return (
     <div
       ref={ref}
       className={`flex items-start ${dropzoneClasses} ${isDragging ? "opacity-50" : "opacity-100"}`}
     >
-      <PropertyTextBlock
-        propertyBlock={currentPropertyBlock}
-        textBlock={block}
-        index={index}
-        // index={currentPropertyBlock?.id}
-        // setPropertyBlockRefs={setPropertyBlockRefs}
-        propertyBlockRefs={propertyBlockRefs}
-        // className={currentPropertyBlock?.style}
-        key={`${currentPropertyBlock?.id}-${block?.id}`}
-        data-id={`${currentPropertyBlock?.id}-${block?.id}`}
-      />
+      <PropertyBlock propertyBlock={propertyBlock} />
       <span
         className="text-gray-300 mr-2 pt-0.5 drag-icon transform hover:scale-125 transition-transform duration-200"
         title="Drag to reorder"
       >
         ⠿
       </span>
-      <TextBlock
-        textBlock={block}
-        propertyBlock={currentPropertyBlock}
-        index={index}
-        // setTextBlockRefs={setTextBlockRefs}
-        textBlockRefs={textBlockRefs}
-      />
+      <EntryBlock propertyBlock={propertyBlock} />
     </div>
   )
 }

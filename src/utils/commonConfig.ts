@@ -1,0 +1,3 @@
+export const WARNING_TYPES = {
+  DELETE_PROPERTY: "DELETE_PROPERTY",
+}

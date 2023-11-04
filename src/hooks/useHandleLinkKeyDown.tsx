@@ -1,28 +1,22 @@
 import ReactDOM from "react-dom"
 import { useEffect, useState } from "react"
-import { TextBlockType, useTextBlocksStore } from "src/store/textBlockStore"
-import { PropertyBlockType } from "src/store/propertyBlockStore"
-import { useFocusStore } from "src/store/focusStore"
+import {
+  PropertyBlockType,
+  isPropertyBlockType,
+  usePropertyBlockStore,
+} from "src/store/propertyBlockStore"
+import { useUIStore } from "src/store/uiStore"
+import { useGetCaretCoordinates } from "./useGetCaretCoordinates"
 
-// TODO - refactor this component (especially getCaretCoordinates) into hooks to seperate concerns
 // TODO - add styling to linked properties so user knows they are linked elsewhere and any changes they make will be reflected elsewhere
-// TODO - refactor component to use useHandleFocusShift hook where possible
-
-// !BUG - Down arrow when dropdown is visible is changing focus to the next property below instead of cycling through the dropdown options. up arrow still works correctly.
 
 export const useHandleLinkKeyDown = (
-  textBlocks: TextBlockType[],
-  propertyBlocks: PropertyBlockType[],
-  setTextBlocks: (
-    blocks: TextBlockType[] | ((prevBlocks: TextBlockType[]) => TextBlockType[])
-  ) => void,
-  setPropertyBlocks: (
-    propertyBlocks: PropertyBlockType[] | ((prevBlocks: PropertyBlockType[]) => PropertyBlockType[])
-  ) => void,
   searchValue: string,
   setSearchValue: (value: string) => void
 ) => {
-  const { setFocusIndex, focusContext, setFocusContext } = useFocusStore()
+  const { setFocusContext } = useUIStore()
+  const { propertyBlocks, convertPropertyBlockToLinkedPropertyBlock } = usePropertyBlockStore()
+  const getCaretCoordinates = useGetCaretCoordinates()
   const [isDropdownVisible, setDropdownVisible] = useState(false)
   const [dropdownPosition, setDropdownPosition] = useState({ left: 0, top: 0 })
   const [dropdownOptions, setDropdownOptions] = useState<PropertyBlockType[]>([])
@@ -30,74 +24,28 @@ export const useHandleLinkKeyDown = (
 
   useEffect(() => {
     if (searchValue) {
-      const filteredPropertyBlockContents = propertyBlocks.filter(
-        (propertyBlock) =>
-          propertyBlock.content.includes(searchValue) && propertyBlock.content !== `@${searchValue}`
-      )
+      const filteredPropertyBlockContents = propertyBlocks
+        .filter(isPropertyBlockType) // Filter out LinkedPropertyBlockType objects
+        .filter(
+          (propertyBlock) =>
+            propertyBlock.content.includes(searchValue) &&
+            propertyBlock.content !== `@${searchValue}`
+        )
       setDropdownOptions(filteredPropertyBlockContents)
     } else {
       setDropdownOptions([]) // Reset dropdown options if searchValue is empty
     }
   }, [searchValue, propertyBlocks])
 
-  const getCaretCoordinates = (element: HTMLTextAreaElement, position: number) => {
-    const doc = element.ownerDocument || element.document
-    const win = doc.defaultView || doc.parentWindow
-    let sel, range, rect
-
-    if (typeof win.getSelection !== "undefined") {
-      sel = win.getSelection()
-      if (sel.rangeCount > 0) {
-        range = win.getSelection().getRangeAt(0).cloneRange()
-        range.setStart(element, 0)
-        range.setEnd(element, position)
-        rect = range.getBoundingClientRect()
-        return {
-          left: rect.left + win.scrollX,
-          top: rect.bottom + win.scrollY,
-        }
-      }
-    }
-    return { left: 0, top: 0 }
-  }
-
-  // const handleDropdownSelect = (selectedOption: string, propertyBlockId: string) => {
   const handleDropdownSelect = (
     selectedPropertyBlock: PropertyBlockType,
     propertyBlockId: string
   ) => {
-    const currentPropertyBlock = propertyBlocks.find(
-      (propertyBlock) => propertyBlock.id === propertyBlockId
-    )
-    const associatedTextBlock = textBlocks.find(
-      (block) => block.propertyBlockId === propertyBlockId
-    )
-
-    if (currentPropertyBlock && associatedTextBlock) {
-      // Add the text block Id to the selected propertyBlock blockIds array
-      const updatedPropertyBlocks = propertyBlocks.map((propertyBlock) =>
-        propertyBlock.id === selectedPropertyBlock.id
-          ? {
-              ...propertyBlock,
-              blockIds: [...(propertyBlock.blockIds || []), associatedTextBlock.id],
-            }
-          : propertyBlock
-      )
-      // Add the property block id to the text block
-      const updatedBlocks = textBlocks.map((block) =>
-        block.id === associatedTextBlock.id
-          ? { ...block, propertyId: selectedPropertyBlock.id }
-          : block
-      )
-      // remove the currentPropertyBlock from the propertyBlocks array permanently
-      const filteredPropertyBlocks = updatedPropertyBlocks.filter(
-        (propertyBlock) => propertyBlock.id !== currentPropertyBlock.id
-      )
-
+    convertPropertyBlockToLinkedPropertyBlock(propertyBlockId, selectedPropertyBlock.id)
+    const propertyBlock = propertyBlocks.find((b) => b.id === propertyBlockId)
+    if (propertyBlock) {
       ReactDOM.unstable_batchedUpdates(() => {
-        setPropertyBlocks(filteredPropertyBlocks)
-        setTextBlocks(updatedBlocks)
-        setFocusContext({ type: "block", id: associatedTextBlock.id })
+        setFocusContext({ type: "entry", id: propertyBlock.entryBlockId })
         setSearchValue("") // Reset the search value
         setDropdownVisible(false) // Close the dropdown
       })
@@ -108,6 +56,8 @@ export const useHandleLinkKeyDown = (
     e: React.KeyboardEvent<HTMLTextAreaElement>,
     propertyBlockId: string
   ) => {
+    e.preventDefault() // Prevent cursor movement in the textarea
+
     if (e.key === "@") {
       const position = e.currentTarget.selectionStart
       const { left, top } = getCaretCoordinates(e.currentTarget, position)
@@ -120,15 +70,15 @@ export const useHandleLinkKeyDown = (
     // Handle arrow navigation in the dropdown menu if it's visible
     if (isDropdownVisible) {
       if (e.key === "ArrowDown") {
-        e.preventDefault() // Prevent cursor movement in the textarea
+        // e.preventDefault() // Prevent cursor movement in the textarea
         setActiveOptionIndex((prevIndex) => (prevIndex + 1) % dropdownOptions.length)
       } else if (e.key === "ArrowUp") {
-        e.preventDefault() // Prevent cursor movement in the textarea
+        // e.preventDefault() // Prevent cursor movement in the textarea
         setActiveOptionIndex(
           (prevIndex) => (prevIndex - 1 + dropdownOptions.length) % dropdownOptions.length
         )
       } else if (e.key === "Enter") {
-        e.preventDefault() // Prevent form submission or other default behavior
+        // e.preventDefault() // Prevent form submission or other default behavior
         if (dropdownOptions[activeOptionIndex]) {
           const selectedOption = dropdownOptions[activeOptionIndex]
           if (selectedOption) {

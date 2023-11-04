@@ -1,12 +1,14 @@
 import React from "react"
-import { BlockType, useBlocksStore } from "src/store/textBlockStore"
-import { useFocusStore } from "src/store/focusStore"
+import { EntryBlockType } from "src/store/entryBlockStore"
+import { useUIStore } from "src/store/uiStore"
+
+// TODO - Get rid of this component, DOM manipulation === BAD
 
 export const useHandleFocusShift = () => {
-  const { setFocusContext } = useFocusStore()
+  const { setFocusContext } = useUIStore()
 
-  const handleFocusShiftToProperty = (block: BlockType) => {
-    const targetPropertyId = `${block.propertyId}-${block.id}`
+  const handleFocusShiftToProperty = (block: EntryBlockType) => {
+    const targetPropertyId = `${block.propertyBlockId}-${block.id}`
     setFocusContext({ type: "property", id: targetPropertyId })
 
     const targetElement = document.querySelector(`[data-id="${targetPropertyId}"]`)
@@ -16,7 +18,7 @@ export const useHandleFocusShift = () => {
     }
   }
 
-  const handleFocusShiftToTextBlock = (block: BlockType) => {
+  const handleFocusShiftToEntryBlock = (block: EntryBlockType) => {
     const targetElement = document.querySelector(`[data-id="${block.id}"]`)
     if (targetElement && "focus" in targetElement) {
       ;(targetElement as HTMLElement).focus()
@@ -25,6 +27,6 @@ export const useHandleFocusShift = () => {
 
   return {
     handleFocusShiftToProperty,
-    handleFocusShiftToTextBlock,
+    handleFocusShiftToEntryBlock,
   }
 }

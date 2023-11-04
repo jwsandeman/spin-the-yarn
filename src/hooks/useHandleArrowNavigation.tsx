@@ -1,57 +1,49 @@
-import { TextBlockType, useTextBlocksStore } from "src/store/textBlockStore"
-import { useHandleFocusShift } from "./useHandleFocusShift"
-import { PropertyBlockType } from "src/store/propertyBlockStore"
-import { useFocusStore } from "src/store/focusStore"
-
-// ?BUG/TODO Convert textBlockRefs and propertyBlockRefs to Rossis new useState format in all affected components
-
-type FocusableBlock = {
-  id: string
-  content: string
-  style: string
-  type: string
-}
+import { usePropertyBlockStore } from "src/store/propertyBlockStore"
+import { useUIStore } from "src/store/uiStore"
 
 export const useHandleArrowNavigation = (
-  setTextBlockRefs: React.MutableRefObject<(HTMLTextAreaElement | null)[]>,
-  blocks: TextBlockType[],
-  propertyBlocks: PropertyBlockType[],
-  blockType: "block" | "property"
+  blockType: "entry" | "property",
+  handleBlockRef: () => void
 ) => {
-  const { focusContext, setFocusContext } = useFocusStore()
-  const { handleFocusShiftToProperty, handleFocusShiftToTextBlock } = useHandleFocusShift()
+  const { setFocusContext } = useUIStore()
+  const { propertyBlocks } = usePropertyBlockStore()
 
   return (
     e: React.KeyboardEvent<HTMLTextAreaElement>,
     propertyBlockId: string,
-    textBlockId: string
+    entryBlockId: string,
+    propertyBlockOrder: number
   ) => {
+    e.preventDefault()
     const textarea = e.target as HTMLTextAreaElement
-    const currentTextBlockIndex = blocks.findIndex((block) => block.id === textBlockId)
 
-    // If Up arrow is pressed and we're at the start of the textarea, and it's not the first textarea
-    if (e.key === "ArrowUp" && textarea.selectionStart === 0 && currentTextBlockIndex > 0) {
-      e.preventDefault()
-      const prevTextBlock = blocks[currentTextBlockIndex - 1]
-      if (blockType === "block" && prevTextBlock) {
-        handleFocusShiftToTextBlock(prevTextBlock)
-      } else if (blockType === "property" && prevTextBlock) {
-        handleFocusShiftToProperty(prevTextBlock)
-      }
+    const prevPropertyBlock = propertyBlocks.find((b) => b.order === propertyBlockOrder - 1)
+    const nextPropertyBlock = propertyBlocks.find((b) => b.order === propertyBlockOrder + 1)
+    // If Up arrow is pressed and we're at the start of the textarea, and it's not the first block
+    if (
+      e.key === "ArrowUp" &&
+      textarea.selectionStart === 0 &&
+      propertyBlockOrder > 0 &&
+      prevPropertyBlock
+    ) {
+      setFocusContext(
+        blockType === "property"
+          ? { type: "property", id: prevPropertyBlock.id }
+          : { type: "entry", id: prevPropertyBlock.entryBlockId }
+      )
     }
     // If Down arrow is pressed and we're at the end of the textarea, and it's not the last textarea
     else if (
       e.key === "ArrowDown" &&
       textarea.selectionStart === textarea.value.length &&
-      currentTextBlockIndex < blocks.length - 1
+      propertyBlockOrder < propertyBlocks.length - 1 &&
+      nextPropertyBlock
     ) {
-      e.preventDefault()
-      const nextTextBlock = blocks[currentTextBlockIndex + 1]
-      if (blockType === "block" && nextTextBlock) {
-        handleFocusShiftToTextBlock(nextTextBlock)
-      } else if (blockType === "property" && nextTextBlock) {
-        handleFocusShiftToProperty(nextTextBlock)
-      }
+      setFocusContext(
+        nextPropertyBlock && blockType === "property"
+          ? { type: "property", id: nextPropertyBlock.id }
+          : { type: "entry", id: nextPropertyBlock.entryBlockId }
+      )
     }
   }
 }

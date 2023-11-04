@@ -1,9 +1,19 @@
-import { useTextBlocksStore } from "./textBlockStore"
-import { usePropertyBlocksStore } from "./propertyBlockStore"
-import { useReferenceBlockStore } from "./referenceBlockStore"
+import { useEntryBlocksStore } from "./entryBlockStore"
+import { usePropertyBlockStore } from "./propertyBlockStore"
 
 export const initializeBlockStores = () => {
-  const textBlock = useTextBlocksStore.getState().createTextBlock()
-  const propertyBlock = usePropertyBlocksStore.getState().createPropertyBlock()
-  useReferenceBlockStore.getState().createReferenceBlock(textBlock.id, propertyBlock.id)
+  const entryBlocks = useEntryBlocksStore.getState().entryBlocks
+  const propertyBlocks = usePropertyBlockStore.getState().propertyBlocks
+
+  if (entryBlocks.length === 0 && propertyBlocks.length === 0) {
+    const entryBlockId = Math.random().toString(36).substr(2, 9)
+    const propertyBlockId = Math.random().toString(36).substr(2, 9)
+
+    const entryBlock = useEntryBlocksStore
+      .getState()
+      .createEntryBlock(entryBlockId, propertyBlockId)
+    const propertyBlock = usePropertyBlockStore
+      .getState()
+      .createPropertyBlock(propertyBlockId, entryBlockId)
+  }
 }
