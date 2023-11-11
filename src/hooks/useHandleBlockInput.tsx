@@ -36,5 +36,32 @@ export const useHandleBlockInput = (blockType: string) => {
         setEntryBlocks(newEntryBlocks)
       }
     }
+
+    // if (blockType === "property") {
+    //   setPropertyBlocks((prevBlocks) =>
+    //     prevBlocks.map((block) => {
+    //       if (block.id === blockId) {
+    //         // const updatedBlock = { ...block, content: e.target.value, height: newHeight }
+    //         // const sourceProperty = getSourceProperty(updatedBlock)
+    //         const sourceProperty = getSourceProperty(block)
+    //         if (sourceProperty) {
+    //           return { ...sourceProperty, content: e.target.value, height: newHeight }
+    //         }
+    //         // return updatedBlock
+    //         // return sourceProperty
+    //       }
+    //       return block
+    //     })
+    //   )
+    // } else if (blockType === "entry") {
+    //   setEntryBlocks((prevBlocks) =>
+    //     prevBlocks.map((block) => {
+    //       if (block.id === blockId) {
+    //         return { ...block, content: e.target.value, height: newHeight }
+    //       }
+    //       return block
+    //     })
+    //   )
+    // }
   }
 }

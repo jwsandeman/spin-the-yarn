@@ -14,7 +14,6 @@ export const useHandleArrowNavigation = (
     entryBlockId: string,
     propertyBlockOrder: number
   ) => {
-    e.preventDefault()
     const textarea = e.target as HTMLTextAreaElement
 
     const prevPropertyBlock = propertyBlocks.find((b) => b.order === propertyBlockOrder - 1)
@@ -26,6 +25,7 @@ export const useHandleArrowNavigation = (
       propertyBlockOrder > 0 &&
       prevPropertyBlock
     ) {
+      e.preventDefault()
       setFocusContext(
         blockType === "property"
           ? { type: "property", id: prevPropertyBlock.id }
@@ -39,6 +39,7 @@ export const useHandleArrowNavigation = (
       propertyBlockOrder < propertyBlocks.length - 1 &&
       nextPropertyBlock
     ) {
+      e.preventDefault()
       setFocusContext(
         nextPropertyBlock && blockType === "property"
           ? { type: "property", id: nextPropertyBlock.id }

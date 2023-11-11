@@ -41,6 +41,7 @@ type PropertyBlockState = {
     entryBlockId: string,
     content?: string
   ) => PropertyBlockType
+  deletePropertyBlock: (propertyBlockId: string) => void
   convertPropertyBlockToLinkedPropertyBlock: (
     existingBlockId: string,
     referenceBlockId: string
@@ -81,13 +82,18 @@ export const usePropertyBlockStore = create<PropertyBlockState>((set, get) => {
       set((state) => ({ propertyBlocks: [...state.propertyBlocks, newBlock] }))
       return newBlock
     },
+    deletePropertyBlock: (propertyBlockId) => {
+      set((state) => ({
+        propertyBlocks: state.propertyBlocks.filter((block) => block.id !== propertyBlockId),
+      }))
+    },
     convertPropertyBlockToLinkedPropertyBlock: (existingBlockId, referenceBlockId) => {
       const existingBlock = get().propertyBlocks.find((block) => block.id === existingBlockId)
       if (!existingBlock || "propertyBlockId" in existingBlock) {
         // Handle the case where the block doesn't exist or is already a linked block
         throw new Error("Property block not found or already a linked block.")
       }
-      const linkedBlock: LinkedPropertyBlockType = {
+      const newlinkedBlock: LinkedPropertyBlockType = {
         id: existingBlock.id,
         propertyBlockId: referenceBlockId,
         entryBlockId: existingBlock.entryBlockId,
@@ -95,10 +101,10 @@ export const usePropertyBlockStore = create<PropertyBlockState>((set, get) => {
       }
       set((state) => ({
         propertyBlocks: state.propertyBlocks.map((block) =>
-          block.id === existingBlockId ? linkedBlock : block
+          block.id === existingBlockId ? newlinkedBlock : block
         ),
       }))
-      return linkedBlock
+      return newlinkedBlock
     },
     convertLinkedPropertyBlockToPropertyBlock: (existingBlockId, sourceBlockContent) => {
       const linkedBlock = get().propertyBlocks.find((block) => block.id === existingBlockId)
@@ -116,7 +122,7 @@ export const usePropertyBlockStore = create<PropertyBlockState>((set, get) => {
         style: "", // Reset style or set it to some default value
         height: "",
       }
-      // Update the propertyBlocks array with the new property block
+      // Overwrite the propertyBlocks array with the new property block
       set((state) => ({
         propertyBlocks: state.propertyBlocks.map((block) =>
           block.id === linkedBlock.id ? newPropertyBlock : block

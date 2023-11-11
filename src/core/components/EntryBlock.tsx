@@ -28,6 +28,12 @@ export const EntryBlock = ({ propertyBlock }) => {
     handleBlockRef()
   }, [focusContext, entryBlock?.id])
 
+  useEffect(() => {
+    // console.log("property block => ", propertyBlock)
+    console.log("entry block => ", entryBlock)
+    console.log("entry blocks => ", entryBlocks)
+  }, [entryBlock, entryBlocks, propertyBlock])
+
   return (
     <>
       {entryBlock && propertyBlock && (

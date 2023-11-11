@@ -19,6 +19,7 @@ type EntryBlocksState = {
     propertyBlock: string,
     content?: string
   ) => EntryBlockType
+  deleteEntryBlock: (entryBlockId: string) => void
   getEntryBlockById: (id: string) => EntryBlockType | undefined
 }
 
@@ -37,10 +38,15 @@ export const useEntryBlocksStore = create<EntryBlocksState>((set, get) => {
         propertyBlockId: propertyBlockId,
         content,
         style: "",
-        type: "Entry",
+        type: "entry",
       }
       set((state) => ({ entryBlocks: [...state.entryBlocks, newBlock] }))
       return newBlock
+    },
+    deleteEntryBlock: (entryBlockId) => {
+      set((state) => ({
+        entryBlocks: state.entryBlocks.filter((block) => block.id !== entryBlockId),
+      }))
     },
     getEntryBlockById: (id) => {
       return get().entryBlocks.find((block) => block.id === id)

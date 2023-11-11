@@ -10,6 +10,8 @@ import { useGetCaretCoordinates } from "./useGetCaretCoordinates"
 
 // TODO - add styling to linked properties so user knows they are linked elsewhere and any changes they make will be reflected elsewhere
 
+// !BUG - linking is very buggy
+
 export const useHandleLinkKeyDown = (
   searchValue: string,
   setSearchValue: (value: string) => void
@@ -41,11 +43,14 @@ export const useHandleLinkKeyDown = (
     selectedPropertyBlock: PropertyBlockType,
     propertyBlockId: string
   ) => {
-    convertPropertyBlockToLinkedPropertyBlock(propertyBlockId, selectedPropertyBlock.id)
-    const propertyBlock = propertyBlocks.find((b) => b.id === propertyBlockId)
-    if (propertyBlock) {
+    const linkedPropertyBlock = convertPropertyBlockToLinkedPropertyBlock(
+      propertyBlockId,
+      selectedPropertyBlock.id
+    )
+    // const propertyBlock = propertyBlocks.find((b) => b.id === propertyBlockId)
+    if (linkedPropertyBlock) {
       ReactDOM.unstable_batchedUpdates(() => {
-        setFocusContext({ type: "entry", id: propertyBlock.entryBlockId })
+        setFocusContext({ type: "entry", id: linkedPropertyBlock.entryBlockId })
         setSearchValue("") // Reset the search value
         setDropdownVisible(false) // Close the dropdown
       })
@@ -56,9 +61,9 @@ export const useHandleLinkKeyDown = (
     e: React.KeyboardEvent<HTMLTextAreaElement>,
     propertyBlockId: string
   ) => {
-    e.preventDefault() // Prevent cursor movement in the textarea
-
     if (e.key === "@") {
+      // e.preventDefault() // Prevent cursor movement in the textarea
+
       const position = e.currentTarget.selectionStart
       const { left, top } = getCaretCoordinates(e.currentTarget, position)
       ReactDOM.unstable_batchedUpdates(() => {
@@ -70,15 +75,15 @@ export const useHandleLinkKeyDown = (
     // Handle arrow navigation in the dropdown menu if it's visible
     if (isDropdownVisible) {
       if (e.key === "ArrowDown") {
-        // e.preventDefault() // Prevent cursor movement in the textarea
+        e.preventDefault() // Prevent cursor movement in the textarea
         setActiveOptionIndex((prevIndex) => (prevIndex + 1) % dropdownOptions.length)
       } else if (e.key === "ArrowUp") {
-        // e.preventDefault() // Prevent cursor movement in the textarea
+        e.preventDefault() // Prevent cursor movement in the textarea
         setActiveOptionIndex(
           (prevIndex) => (prevIndex - 1 + dropdownOptions.length) % dropdownOptions.length
         )
       } else if (e.key === "Enter") {
-        // e.preventDefault() // Prevent form submission or other default behavior
+        e.preventDefault() // Prevent form submission or other default behavior
         if (dropdownOptions[activeOptionIndex]) {
           const selectedOption = dropdownOptions[activeOptionIndex]
           if (selectedOption) {

@@ -35,7 +35,12 @@ export const Editor = ({ element }) => {
 
   useEffect(() => {
     initializeBlockStores()
+    console.log("initialising block stores")
   }, [])
+
+  useEffect(() => {
+    console.log("property blocks => ", propertyBlocks)
+  }, [propertyBlocks])
 
   return (
     <div>
@@ -50,11 +55,11 @@ export const Editor = ({ element }) => {
         {propertyBlocks && (
           <Suspense fallback={<div>Loading Editor...</div>}>
             {/* <NotesList /> */}
-            {propertyBlocks.map((propertyBlock, index) => (
+            {propertyBlocks.map((propertyBlock) => (
               <DraggableBlock
                 key={propertyBlock.id}
                 propertyBlock={propertyBlock}
-                index={propertyBlocks.findIndex((b) => b.id === propertyBlock.id)}
+                index={propertyBlock.order}
                 moveBlock={moveBlock}
               />
             ))}

@@ -9,6 +9,7 @@ export const useUpdatePropertyBlocksOrder = () => {
         updatedPropertyBlock.order = i
       }
     }
+    console.log("updating property blocks order", updatedPropertyBlocks)
     return updatedPropertyBlocks
   }
 

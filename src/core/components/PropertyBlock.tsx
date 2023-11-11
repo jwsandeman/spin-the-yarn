@@ -40,6 +40,11 @@ export const PropertyBlock = ({ propertyBlock }) => {
     handleBlockRef()
   }, [focusContext, propertyBlock.id])
 
+  // useEffect(() => {
+  //   console.log("property block component => ", propertyBlock)
+  //   console.log("property block component => ", getSourceProperty(propertyBlock))
+  // }, [propertyBlock])
+
   return (
     <div className="relative">
       {propertyBlock && (
@@ -49,12 +54,14 @@ export const PropertyBlock = ({ propertyBlock }) => {
           value={getSourceProperty(propertyBlock)?.content}
           ref={propertyBlockRef}
           onChange={(e) => {
+            console.log("onChange firing")
             handleInputChange(e)
-            handleBlockInput(e, propertyBlock?.id)
+            handleBlockInput(e, propertyBlock.id)
           }}
           onKeyDown={(e) => {
+            console.log("onKeyDown firing")
             handleKeyDown(e, propertyBlock)
-            handleLinkKeyDown(e, propertyBlock?.id)
+            handleLinkKeyDown(e, propertyBlock.id)
             handleArrowNavigation(
               e,
               propertyBlock.id,
@@ -72,7 +79,7 @@ export const PropertyBlock = ({ propertyBlock }) => {
         <LinkDropdownMenu
           options={dropdownOptions}
           activeOptionIndex={activeOptionIndex}
-          onSelect={(option) => handleDropdownSelect(option, propertyBlock?.id)}
+          onSelect={(option) => handleDropdownSelect(option, propertyBlock.id)}
           onClose={() => setDropdownVisible(false)}
           position={dropdownPosition}
         />
