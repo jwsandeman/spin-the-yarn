@@ -24,7 +24,6 @@ export const PropertyBlock = ({ propertyBlock }) => {
 
   const handleBlockInput = useHandleBlockInput("property")
   const handleArrowNavigation = useHandleArrowNavigation("property", handleBlockRef)
-  const handleKeyDown = useHandleKeyDown("property")
   const {
     handleLinkKeyDown,
     handleInputChange,
@@ -35,6 +34,7 @@ export const PropertyBlock = ({ propertyBlock }) => {
     dropdownOptions,
     activeOptionIndex,
   } = useHandleLinkKeyDown(searchValue, setSearchValue)
+  const handleKeyDown = useHandleKeyDown("property", isDropdownVisible)
 
   useEffect(() => {
     handleBlockRef()

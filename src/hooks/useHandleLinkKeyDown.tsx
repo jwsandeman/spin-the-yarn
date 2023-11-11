@@ -10,7 +10,7 @@ import { useGetCaretCoordinates } from "./useGetCaretCoordinates"
 
 // TODO - add styling to linked properties so user knows they are linked elsewhere and any changes they make will be reflected elsewhere
 
-// !BUG - linking is very buggy
+// !BUG - When backspacing on a linked property it instantly deletes the whole linked property regardless of how much content is in the block. Also source property warning is not showing and you are unable to delete source property.
 
 export const useHandleLinkKeyDown = (
   searchValue: string,
@@ -82,14 +82,16 @@ export const useHandleLinkKeyDown = (
         setActiveOptionIndex(
           (prevIndex) => (prevIndex - 1 + dropdownOptions.length) % dropdownOptions.length
         )
-      } else if (e.key === "Enter") {
+      } else if (isDropdownVisible && e.key === "Enter") {
         e.preventDefault() // Prevent form submission or other default behavior
+        e.stopPropagation() // Prevent event from propagating further
         if (dropdownOptions[activeOptionIndex]) {
           const selectedOption = dropdownOptions[activeOptionIndex]
           if (selectedOption) {
             handleDropdownSelect(selectedOption, propertyBlockId)
           }
         }
+        return
       }
     }
   }

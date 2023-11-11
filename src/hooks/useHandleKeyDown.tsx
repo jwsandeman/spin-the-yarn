@@ -17,7 +17,7 @@ import { useDeleteBlocks } from "./useDeleteBlocks"
 // TODO - refactor this component to seperate concerns
 // TODO - when backspacing in an empty text block it should shift focus to the associated property block if the property has content otherwise it will delete the block as normal
 
-export const useHandleKeyDown = (blockType: "entry" | "property") => {
+export const useHandleKeyDown = (blockType: "entry" | "property", isDropdownVisible: boolean) => {
   const {
     setFocusContext,
     setShowWarning,
@@ -66,46 +66,6 @@ export const useHandleKeyDown = (blockType: "entry" | "property") => {
       return acc
     }, [])
   }
-  // useEffect(() => {
-  //   if (
-  //     userAccepted &&
-  //     currentPropertyBlock &&
-  //     isPropertyBlockType(currentPropertyBlock) &&
-  //     currentWarningType === WARNING_TYPES.DELETE_PROPERTY
-  //   ) {
-  //     // Find all associated linkedProperties and convert them back into normal property blocks
-  //     console.log("converting linkedProperty to normal property")
-  //     const linkedPropertyBlocks = propertyBlocks.filter((b) => !isPropertyBlockType(b))
-  //     const associatedLinkedPropertyIds = linkedPropertyBlocks
-  //       .filter((b: LinkedPropertyBlockType) => b.propertyBlockId === currentPropertyBlock.id)
-  //       .map((b) => b.id)
-  //     const updatedPropertyBlocks = propertyBlocks.map((block) =>
-  //       associatedLinkedPropertyIds.includes(block.id)
-  //         ? convertLinkedPropertyBlockToPropertyBlock(block.id, currentPropertyBlock.content)
-  //         : block
-  //     )
-  //     // Remove the source property from the array
-  //     // const filteredPropertyBlocks = updatedPropertyBlocks.filter(
-  //     //   (b) => b.id !== currentPropertyBlock.id
-  //     // )
-  //     // Update the order of blocks and save to store
-  //     // setPropertyBlocks(updatePropertyBlocksOrder(filteredPropertyBlocks))
-  //     setPropertyBlocks(updatedPropertyBlocks)
-  //     // delete the property block and associated entry block from store
-  //     setPropertyBlocks(updatePropertyBlocksOrder(deleteBlocks(currentPropertyBlock.id)))
-  //     // Reset userAccepted and pendingDeletionBlock for future actions
-  //     setCurrentWarningType("")
-  //     setUserAccepted(false)
-  //     setCurrentPropertyBlock(null)
-  //   }
-  // }, [
-  //   userAccepted,
-  //   setUserAccepted,
-  //   currentPropertyBlock,
-  //   setCurrentPropertyBlock,
-  //   currentWarningType,
-  //   setCurrentWarningType,
-  // ])
 
   useEffect(() => {
     if (
@@ -115,27 +75,6 @@ export const useHandleKeyDown = (blockType: "entry" | "property") => {
       currentWarningType === WARNING_TYPES.DELETE_PROPERTY
     ) {
       // Combined logic to handle both linked properties and deleting the current block
-      // const updatedPropertyBlocks = propertyBlocks.reduce<
-      //   (PropertyBlockType | LinkedPropertyBlockType)[]
-      // >((acc, block) => {
-      //   if (block.id === currentPropertyBlock.id) {
-      //     // Skip adding the current property block as it's being deleted
-      //     return acc
-      //   } else if (
-      //     !isPropertyBlockType(block) &&
-      //     block.propertyBlockId === currentPropertyBlock.id
-      //   ) {
-      //     // Convert linked property blocks and add them to the accumulator
-      //     acc.push(
-      //       convertLinkedPropertyBlockToPropertyBlock(block.id, currentPropertyBlock.content)
-      //     )
-      //   } else {
-      //     // Add all other blocks to the accumulator
-      //     acc.push(block)
-      //   }
-      //   return acc
-      // }, [])
-
       const updatedPropertyBlocks = sourcePropertyDeletion(currentPropertyBlock)
 
       // Update the store once with the new array
@@ -168,7 +107,7 @@ export const useHandleKeyDown = (blockType: "entry" | "property") => {
 
     // ========== ENTER ========== //
 
-    if (e.key === "Enter") {
+    if (!isDropdownVisible && e.key === "Enter") {
       // If "Shift" + "Enter" is pressed, allow default behavior (new line in textarea)
       if (e.shiftKey) {
         return
