@@ -15,15 +15,6 @@ export const Editor = ({ element }) => {
     const [movedBlock] = updatedPropertyBlocks.splice(fromIndex, 1)
     if (movedBlock) {
       updatedPropertyBlocks.splice(toIndex, 0, movedBlock)
-
-      // // Update the order field of blocks
-      // for (let i = 0; i < updatedPropertyBlocks.length; i++) {
-      //   const updatedPropertyBlock = updatedPropertyBlocks[i]
-      //   if (updatedPropertyBlock) {
-      //     updatedPropertyBlock.order = i
-      //   }
-      // }
-
       setPropertyBlocks(updatePropertyBlocksOrder(updatedPropertyBlocks))
 
       // Now, use a Blitz.js mutation to save the order in the database

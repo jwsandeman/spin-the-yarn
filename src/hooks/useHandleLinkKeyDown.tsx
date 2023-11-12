@@ -10,8 +10,6 @@ import { useGetCaretCoordinates } from "./useGetCaretCoordinates"
 
 // TODO - add styling to linked properties so user knows they are linked elsewhere and any changes they make will be reflected elsewhere
 
-// !BUG - When backspacing on a linked property it instantly deletes the whole linked property regardless of how much content is in the block. Also source property warning is not showing and you are unable to delete source property.
-
 export const useHandleLinkKeyDown = (
   searchValue: string,
   setSearchValue: (value: string) => void

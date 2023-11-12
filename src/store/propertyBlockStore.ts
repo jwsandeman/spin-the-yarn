@@ -1,3 +1,4 @@
+import { link } from "fs"
 import { PropertyBlock } from "src/core/components/PropertyBlock"
 import { create } from "zustand"
 
@@ -108,7 +109,9 @@ export const usePropertyBlockStore = create<PropertyBlockState>((set, get) => {
     },
     convertLinkedPropertyBlockToPropertyBlock: (existingBlockId, sourceBlockContent) => {
       const linkedBlock = get().propertyBlocks.find((block) => block.id === existingBlockId)
-      if (!linkedBlock || !("propertyBlockId" in linkedBlock)) {
+      console.log("linked block to be converted into normal block", linkedBlock)
+      // if (!linkedBlock || !("propertyBlockId" in linkedBlock)) {
+      if (!linkedBlock) {
         // Handle the case where the block doesn't exist or is not a linked block
         throw new Error("Linked block not found or block is not a linked block.")
       }
@@ -116,11 +119,11 @@ export const usePropertyBlockStore = create<PropertyBlockState>((set, get) => {
       const newPropertyBlock: PropertyBlockType = {
         id: linkedBlock.id,
         entryBlockId: linkedBlock.entryBlockId,
-        content: `"${sourceBlockContent}" property deleted`, // Set content to source block content with alert message
+        content: `"Source property deleted"`, // Set content to source block content with alert message
         order: linkedBlock.order,
         type: "property", // Assuming this is the default type for a property block
         style: "", // Reset style or set it to some default value
-        height: "",
+        height: "auto",
       }
       // Overwrite the propertyBlocks array with the new property block
       set((state) => ({

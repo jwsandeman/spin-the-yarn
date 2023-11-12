@@ -1,10 +1,5 @@
 import { useEntryBlocksStore } from "src/store/entryBlockStore"
-import {
-  LinkedPropertyBlockType,
-  PropertyBlockType,
-  isPropertyBlockType,
-  usePropertyBlockStore,
-} from "src/store/propertyBlockStore"
+import { isPropertyBlockType, usePropertyBlockStore } from "src/store/propertyBlockStore"
 import { useUIStore } from "src/store/uiStore"
 import { useCreateBlocks } from "./useCreateBlocks"
 import { useUpdatePropertyBlocksOrder } from "./useUpdatePropertyBlocksOrder"
@@ -17,7 +12,10 @@ import { useDeleteBlocks } from "./useDeleteBlocks"
 // TODO - refactor this component to seperate concerns
 // TODO - when backspacing in an empty text block it should shift focus to the associated property block if the property has content otherwise it will delete the block as normal
 
-export const useHandleKeyDown = (blockType: "entry" | "property", isDropdownVisible: boolean) => {
+export const useHandleKeyDown = (
+  blockType: "entry" | "property",
+  isDropdownVisible?: boolean | false
+) => {
   const {
     setFocusContext,
     setShowWarning,
@@ -35,36 +33,13 @@ export const useHandleKeyDown = (blockType: "entry" | "property", isDropdownVisi
   } = usePropertyBlockStore()
   const { entryBlocks, setEntryBlocks } = useEntryBlocksStore()
   const createBlocksHook = useCreateBlocks()
-  const deleteBlocks = useDeleteBlocks()
+  const { deleteBlocks, deleteSourcePropertyBlocks } = useDeleteBlocks()
   const updatePropertyBlocksOrder = useUpdatePropertyBlocksOrder()
   const { getSourceProperty, isSourceProperty } = useGetSourceProperty()
 
   const showDeletePropertyWarning = () => {
     setCurrentWarningType(WARNING_TYPES.DELETE_PROPERTY)
     setShowWarning(true)
-  }
-
-  const getAdjacentPropertyBlock = (order, direction = "prev") => {
-    return propertyBlocks.find((b) => b.order === order + (direction === "prev" ? -1 : 1))
-  }
-
-  const sourcePropertyDeletion = (currentPropertyBlock) => {
-    // Combined logic to handle both linked properties and deleting the current block
-    const updatedPropertyBlocks = propertyBlocks.reduce<
-      (PropertyBlockType | LinkedPropertyBlockType)[]
-    >((acc, block) => {
-      if (block.id === currentPropertyBlock.id) {
-        // Skip adding the current property block as it's being deleted
-        return acc
-      } else if (!isPropertyBlockType(block) && block.propertyBlockId === currentPropertyBlock.id) {
-        // Convert linked property blocks and add them to the accumulator
-        acc.push(convertLinkedPropertyBlockToPropertyBlock(block.id, currentPropertyBlock.content))
-      } else {
-        // Add all other blocks to the accumulator
-        acc.push(block)
-      }
-      return acc
-    }, [])
   }
 
   useEffect(() => {
@@ -74,13 +49,8 @@ export const useHandleKeyDown = (blockType: "entry" | "property", isDropdownVisi
       isPropertyBlockType(currentPropertyBlock) &&
       currentWarningType === WARNING_TYPES.DELETE_PROPERTY
     ) {
-      // Combined logic to handle both linked properties and deleting the current block
-      const updatedPropertyBlocks = sourcePropertyDeletion(currentPropertyBlock)
-
-      // Update the store once with the new array
-      setPropertyBlocks(updatePropertyBlocksOrder(updatedPropertyBlocks))
-      deleteBlocks(currentPropertyBlock.id) // Assuming this also handles entry block deletion
-
+      // Combined logic to handle converting linked properties and deleting the current property and entry blocks
+      deleteSourcePropertyBlocks(currentPropertyBlock)
       // Reset state values
       setCurrentWarningType("")
       setUserAccepted(false)
@@ -98,12 +68,10 @@ export const useHandleKeyDown = (blockType: "entry" | "property", isDropdownVisi
   ])
 
   return (e: React.KeyboardEvent<HTMLTextAreaElement>, propertyBlock) => {
-    // const prevPropertyBlock = propertyBlocks.find((b) => b.order === propertyBlock.order - 1)
-    // const nextPropertyBlock = propertyBlocks.find((b) => b.order === propertyBlock.order + 1)
-    const prevPropertyBlock = getAdjacentPropertyBlock(propertyBlock.order, "prev")
-    const nextPropertyBlock = getAdjacentPropertyBlock(propertyBlock.order, "next")
+    const prevPropertyBlock = propertyBlocks.find((b) => b.order === propertyBlock.order - 1)
+    const nextPropertyBlock = propertyBlocks.find((b) => b.order === propertyBlock.order + 1)
+    const sourceProperty = getSourceProperty(propertyBlock)
     const associatedEntryBlock = entryBlocks.find((b) => b.id === propertyBlock.entryBlockId)
-    // const sourceProperty = propertyBlock ? getSourceProperty(propertyBlock) : null
 
     // ========== ENTER ========== //
 
@@ -123,7 +91,6 @@ export const useHandleKeyDown = (blockType: "entry" | "property", isDropdownVisi
         )
         // Insert newly created property block into correct position after current property block
         filteredPropertyBlocks.splice(propertyBlock.order + 1, 0, newPropertyBlock)
-        // updatedPropertyBlocks.splice(propertyBlock.order + 1, 0, newPropertyBlock)
         setPropertyBlocks(updatePropertyBlocksOrder(filteredPropertyBlocks))
       }
       setFocusContext(
@@ -141,26 +108,27 @@ export const useHandleKeyDown = (blockType: "entry" | "property", isDropdownVisi
       }
 
       if (
+        sourceProperty &&
         associatedEntryBlock &&
-        !propertyBlock.content &&
-        !associatedEntryBlock.content &&
-        (prevPropertyBlock || nextPropertyBlock)
+        !sourceProperty.content &&
+        !associatedEntryBlock.content
       ) {
-        // remove property block from store
         if (isSourceProperty(propertyBlock)) {
           // if its the source block it will give a warning that block will be deleted from everywhere for the user to accept. They wont really be deleted they will just be converted back into normal property blocks with the content having placeholer text saying "${sourcePropertyContent} property deleted". this way user's will learn very quickly how linked properties work.
           setCurrentPropertyBlock(propertyBlock)
           showDeletePropertyWarning()
-          console.log("deleting source block")
+          e.preventDefault()
+          e.stopPropagation() // prevents backspace behaviour from propagating in next block
+          console.log("deleted source block")
         } else {
           // Remove the unlinked property or linked property from the store
           console.log("deleting unlinked property or linked property block")
           console.log("entry blocks in normal property deletion", entryBlocks)
-          setPropertyBlocks(updatePropertyBlocksOrder(deleteBlocks(propertyBlock.id)))
+          deleteBlocks(propertyBlock.id)
+          e.preventDefault()
+          e.stopPropagation() // prevents backspace behaviour from propagating in next block
         }
-
-        e.preventDefault()
-        e.stopPropagation() // prevents backspace behaviour from propagating in next block
+        // }
 
         if (prevPropertyBlock) {
           console.log("there is a previous property, setting focus to that")
