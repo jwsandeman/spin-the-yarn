@@ -1,4 +1,4 @@
-import { PropertyBlockType } from "src/store/propertyBlocksStore"
+import { PropertyBlockType } from "src/store/propertyBlockStore"
 
 type DropdownMenuProps = {
   options: PropertyBlockType[]
