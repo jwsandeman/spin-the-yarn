@@ -33,19 +33,40 @@ export const Editor = ({ element }) => {
     console.log("property blocks => ", propertyBlocks)
   }, [propertyBlocks])
 
+  // return (
+  //   <div>
+  //     {/* <Head>
+  //       <title className="bg-blue">Notes</title>
+  //     </Head> */}
+  //     {/* <div className="bg-green-100 text-green-500"> */}
+  //     <div className="">
+  //       {/* <p>
+  //         <Link href={Routes.NewNotePage({ userId: userId })}>Create Note</Link>
+  //       </p> */}
+  //       {propertyBlocks && (
+  //         <Suspense fallback={<div>Loading Editor...</div>}>
+  //           {/* <NotesList /> */}
+  //           {propertyBlocks.map((propertyBlock) => (
+  //             <DraggableBlock
+  //               key={propertyBlock.id}
+  //               propertyBlock={propertyBlock}
+  //               index={propertyBlock.order}
+  //               moveBlock={moveBlock}
+  //             />
+  //           ))}
+  //         </Suspense>
+  //       )}
+  //     </div>
+  //   </div>
+  // )
   return (
-    <div>
-      {/* <Head>
-        <title className="bg-blue">Notes</title>
-      </Head> */}
-      {/* <div className="bg-green-100 text-green-500"> */}
-      <div className="">
-        {/* <p>
-          <Link href={Routes.NewNotePage({ userId: userId })}>Create Note</Link>
-        </p> */}
+    <div className="flex flex-col p-4 bg-white rounded-2xl shadow-lg">
+      {/* You might not need this div, depending on your layout */}
+      <div className="flex flex-col space-y-2">
+        {" "}
+        {/* space-y-2 adds vertical space between each DraggableBlock */}
         {propertyBlocks && (
           <Suspense fallback={<div>Loading Editor...</div>}>
-            {/* <NotesList /> */}
             {propertyBlocks.map((propertyBlock) => (
               <DraggableBlock
                 key={propertyBlock.id}

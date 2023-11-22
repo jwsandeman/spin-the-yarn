@@ -40,6 +40,22 @@ export const PropertyBlock = ({ propertyBlock }) => {
     handleBlockRef()
   }, [focusContext, propertyBlock.id])
 
+  const handleResize = () => {
+    const current = propertyBlockRef.current
+    if (current) {
+      // Set the height to 'auto' first to ensure the size is recalculated correctly
+      current.style.height = "auto"
+      // Set the height to the scrollHeight plus a little extra space
+      current.style.height = `${current.scrollHeight}px`
+    }
+  }
+
+  // Run handleResize when propertyBlock.content changes
+  useEffect(() => {
+    handleResize()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [propertyBlock?.content])
+
   // useEffect(() => {
   //   console.log("property block component => ", propertyBlock)
   //   console.log("property block component => ", getSourceProperty(propertyBlock))

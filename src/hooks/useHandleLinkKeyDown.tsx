@@ -9,6 +9,7 @@ import { useUIStore } from "src/store/uiStore"
 import { useGetCaretCoordinates } from "./useGetCaretCoordinates"
 
 // TODO - add styling to linked properties so user knows they are linked elsewhere and any changes they make will be reflected elsewhere
+// TODO - add linking to entry blocks so user can link any other element in their projects
 
 export const useHandleLinkKeyDown = (
   searchValue: string,

@@ -1,4 +1,19 @@
 /** @type {import('tailwindcss').Config} */
+
+const hexToRgb = (hex) => {
+  // Remove the hash at the beginning of the hex color string
+  hex = hex.replace(/^#/, "")
+
+  // Parse the hex color string to an integer and extract the RGB components
+  const bigint = parseInt(hex, 16)
+  const r = (bigint >> 16) & 255
+  const g = (bigint >> 8) & 255
+  const b = bigint & 255
+
+  // Return the RGB color as a string
+  return `${r}, ${g}, ${b}`
+}
+
 module.exports = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
@@ -9,7 +24,23 @@ module.exports = {
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      boxShadow: {
+        // neumorphic: ({ theme }) => {
+        //   // Fetch the primary and secondary colors from the theme as hex values
+        //   const primaryHex = theme("colors.primary")
+        //   const secondaryHex = theme("colors.secondary")
+
+        //   // Convert hex colors to RGB
+        //   const primaryRgb = hexToRgb(primaryHex)
+        //   const secondaryRgb = hexToRgb(secondaryHex)
+
+        //   // Return the boxShadow value using the RGB colors
+        //   return `4px 4px 6px 0 rgba(${primaryRgb}, 0.1), -4px -4px 6px 0 rgba(${secondaryRgb}, 0.7)`
+        // },
+        neumorphic: `4px 4px 6px 0 rgba(253, 245, 0, 0.1), -4px -4px 6px 0 rgba(147, 112, 219, 0.7)`, // Direct RGB values from your mycyberpunk theme
+      },
+    },
   },
   daisyui: {
     themes: [
