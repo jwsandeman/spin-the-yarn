@@ -61,9 +61,10 @@ export const Editor = ({ element }) => {
   // )
   return (
     <div className="flex flex-col p-4 bg-white rounded-2xl shadow-lg">
+      {/* <div> */}
       {/* You might not need this div, depending on your layout */}
+      {/* <div className=""> */}
       <div className="flex flex-col space-y-2">
-        {" "}
         {/* space-y-2 adds vertical space between each DraggableBlock */}
         {propertyBlocks && (
           <Suspense fallback={<div>Loading Editor...</div>}>

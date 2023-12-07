@@ -2,12 +2,15 @@ import { Suspense } from "react"
 import { Routes } from "@blitzjs/next"
 import Head from "next/head"
 import Link from "next/link"
-import { usePaginatedQuery } from "@blitzjs/rpc"
+import { useMutation, usePaginatedQuery } from "@blitzjs/rpc"
 import { useParam } from "@blitzjs/next"
 import { useRouter } from "next/router"
 import Layout from "src/core/layouts/Layout"
 import getNotes from "src/notes/queries/getNotes"
 import { Editor } from "src/core/components/Editor"
+import { useCurrentUser } from "src/users/hooks/useCurrentUser"
+import styles from "src/styles/Home.module.css"
+import logout from "src/auth/mutations/logout"
 
 const ITEMS_PER_PAGE = 100
 
@@ -47,6 +50,42 @@ export const NotesList = () => {
   )
 }
 
+const UserInfo = () => {
+  const currentUser = useCurrentUser()
+  const [logoutMutation] = useMutation(logout)
+
+  if (currentUser) {
+    return (
+      <>
+        <button
+          className={styles.button}
+          onClick={async () => {
+            await logoutMutation()
+          }}
+        >
+          Logout
+        </button>
+        <div>
+          User id: <code>{currentUser.id}</code>
+          <br />
+          User role: <code>{currentUser.role}</code>
+        </div>
+      </>
+    )
+  } else {
+    return (
+      <>
+        <Link href={Routes.SignupPage()} className={styles.button}>
+          <strong>Sign Up</strong>
+        </Link>
+        <Link href={Routes.LoginPage()} className={styles.loginButton}>
+          <strong>Login</strong>
+        </Link>
+      </>
+    )
+  }
+}
+
 const NotesPage = () => {
   const userId = useParam("userId", "number")
 
@@ -65,6 +104,9 @@ const NotesPage = () => {
           <Link href={Routes.NewNotePage({ userId: userId })}>Create Note</Link>
         </p> */}
         <Suspense fallback={<div>Loading Notes...</div>}>
+          <Suspense fallback="Loading...">
+            <UserInfo />
+          </Suspense>
           {/* <NotesList /> */}
           <Editor element={note} />
         </Suspense>
