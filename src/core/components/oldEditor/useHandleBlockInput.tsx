@@ -1,13 +1,14 @@
 import React from "react"
 import { useEntryBlocksStore } from "src/store/entryBlockStore"
 import { usePropertyBlockStore } from "src/store/propertyBlockStore"
-import { useGetSourceProperty } from "./useGetSourceProperty"
+import { useGetSourceProperty } from "../../../hooks/useGetSourceProperty"
 
 export const useHandleBlockInput = (blockType: string) => {
   const { propertyBlocks, setPropertyBlocks } = usePropertyBlockStore()
   const { entryBlocks, setEntryBlocks } = useEntryBlocksStore()
   const { getSourceProperty } = useGetSourceProperty()
 
+  // return (e: React.ChangeEvent<HTMLTextAreaElement>, blockId: string) => {
   return (e: React.ChangeEvent<HTMLTextAreaElement>, blockId: string) => {
     const textarea = e.target
     const newHeight = `${textarea.scrollHeight}px`

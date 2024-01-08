@@ -7,7 +7,7 @@ import { useParam } from "@blitzjs/next"
 import { useRouter } from "next/router"
 import Layout from "src/core/layouts/Layout"
 import getNotes from "src/notes/queries/getNotes"
-import { Editor } from "src/core/components/Editor"
+import { EditorContainer } from "src/core/components/editor/EditorContainer"
 import { useCurrentUser } from "src/users/hooks/useCurrentUser"
 import styles from "src/styles/Home.module.css"
 import logout from "src/auth/mutations/logout"
@@ -108,7 +108,7 @@ const NotesPage = () => {
             <UserInfo />
           </Suspense>
           {/* <NotesList /> */}
-          <Editor element={note} />
+          <EditorContainer element={note} />
         </Suspense>
       </div>
     </Layout>

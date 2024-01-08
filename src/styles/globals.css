@@ -8,6 +8,11 @@
   }
 }
 
+.codeSnippet {
+  /* @apply border border-neutral-700 text-neutral-600 font-mono p-1 rounded; */
+  @apply border border-neutral-700 text-secondary tracking-wide font-mono italic p-0.5 rounded;
+}
+
 /* :root {
   --border-radius: 0.75rem;
   --screen-width: 90vmin;

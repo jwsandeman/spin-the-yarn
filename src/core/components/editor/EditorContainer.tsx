@@ -5,7 +5,7 @@ import { usePropertyBlockStore } from "src/store/propertyBlockStore"
 import { useGetSourceProperty } from "src/hooks/useGetSourceProperty"
 import { useUpdatePropertyBlocksOrder } from "src/hooks/useUpdatePropertyBlocksOrder"
 
-export const Editor = ({ element }) => {
+export const EditorContainer = ({ element }) => {
   const { propertyBlocks, setPropertyBlocks } = usePropertyBlockStore()
   const getSourceProperty = useGetSourceProperty()
   const updatePropertyBlocksOrder = useUpdatePropertyBlocksOrder()
@@ -33,38 +33,13 @@ export const Editor = ({ element }) => {
     console.log("property blocks => ", propertyBlocks)
   }, [propertyBlocks])
 
-  // return (
-  //   <div>
-  //     {/* <Head>
-  //       <title className="bg-blue">Notes</title>
-  //     </Head> */}
-  //     {/* <div className="bg-green-100 text-green-500"> */}
-  //     <div className="">
-  //       {/* <p>
-  //         <Link href={Routes.NewNotePage({ userId: userId })}>Create Note</Link>
-  //       </p> */}
-  //       {propertyBlocks && (
-  //         <Suspense fallback={<div>Loading Editor...</div>}>
-  //           {/* <NotesList /> */}
-  //           {propertyBlocks.map((propertyBlock) => (
-  //             <DraggableBlock
-  //               key={propertyBlock.id}
-  //               propertyBlock={propertyBlock}
-  //               index={propertyBlock.order}
-  //               moveBlock={moveBlock}
-  //             />
-  //           ))}
-  //         </Suspense>
-  //       )}
-  //     </div>
-  //   </div>
-  // )
   return (
-    <div className="flex flex-col p-4 bg-white rounded-2xl shadow-lg">
+    // <div className="flex flex-col p-4 bg-white rounded-2xl shadow-lg">
+    <div className="flex flex-col p-4 rounded-2xl">
       {/* <div> */}
       {/* You might not need this div, depending on your layout */}
       {/* <div className=""> */}
-      <div className="flex flex-col space-y-2">
+      <div className="flex flex-col space-y-2 prose">
         {/* space-y-2 adds vertical space between each DraggableBlock */}
         {propertyBlocks && (
           <Suspense fallback={<div>Loading Editor...</div>}>

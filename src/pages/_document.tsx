@@ -8,7 +8,7 @@ class MyDocument extends Document {
   // }
   render() {
     return (
-      <Html data-theme="mycyberpunk" lang="en">
+      <Html data-theme="cyberpunk2077" lang="en">
         <Head />
         <body>
           <Main />

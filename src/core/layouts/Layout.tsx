@@ -1,8 +1,6 @@
 import Head from "next/head"
 import React, { FC } from "react"
 import { BlitzLayout } from "@blitzjs/next"
-import { Navbar } from "../components/Navbar"
-import { Sidebar } from "../components/Sidebar"
 import { MainContainer } from "../components/MainContainer"
 import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"

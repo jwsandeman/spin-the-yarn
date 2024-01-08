@@ -1,19 +1,5 @@
 /** @type {import('tailwindcss').Config} */
 
-const hexToRgb = (hex) => {
-  // Remove the hash at the beginning of the hex color string
-  hex = hex.replace(/^#/, "")
-
-  // Parse the hex color string to an integer and extract the RGB components
-  const bigint = parseInt(hex, 16)
-  const r = (bigint >> 16) & 255
-  const g = (bigint >> 8) & 255
-  const b = bigint & 255
-
-  // Return the RGB color as a string
-  return `${r}, ${g}, ${b}`
-}
-
 module.exports = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
@@ -26,18 +12,6 @@ module.exports = {
   theme: {
     extend: {
       boxShadow: {
-        // neumorphic: ({ theme }) => {
-        //   // Fetch the primary and secondary colors from the theme as hex values
-        //   const primaryHex = theme("colors.primary")
-        //   const secondaryHex = theme("colors.secondary")
-
-        //   // Convert hex colors to RGB
-        //   const primaryRgb = hexToRgb(primaryHex)
-        //   const secondaryRgb = hexToRgb(secondaryHex)
-
-        //   // Return the boxShadow value using the RGB colors
-        //   return `4px 4px 6px 0 rgba(${primaryRgb}, 0.1), -4px -4px 6px 0 rgba(${secondaryRgb}, 0.7)`
-        // },
         neumorphic: `4px 4px 6px 0 rgba(253, 245, 0, 0.1), -4px -4px 6px 0 rgba(147, 112, 219, 0.7)`, // Direct RGB values from your mycyberpunk theme
       },
     },
@@ -45,22 +19,132 @@ module.exports = {
   daisyui: {
     themes: [
       {
-        mycyberpunk: {
+        cyberpunk2077: {
           primary: "#FDF500",
           secondary: "#9370DB",
           accent: "#CB1DCD",
           // Dark/neutral - 100: For body background color
-          // Dark/neutral - 200: For cards background color
+          // Dark/neutral - 200: For card background color
           // Dark/neutral - 300: For chips buttons, dropdowns background color
           // Dark/neutral - 400: For sidebars, navbar background color
           // Dark/neutral - 500: For modal, dialogs background color
           // Dark/neutral - 600: For on background texts color
-          neutral: "#272932",
-          "base-100": "#1B1C22",
+          neutral: "#110e19",
+          "base-100": "#272932",
           info: "#37EBF3",
           success: "#2CF6B3",
-          warning: "#E55934",
-          error: "#D62246",
+          warning: "#fab367",
+          error: "#E55934",
+        },
+        cyberpunkshades: {
+          neutral: {
+            DEFAULT: "#110e19",
+            100: "#040305",
+            200: "#07060a",
+            300: "#0b0910",
+            400: "#0e0c15",
+            500: "#110e19",
+            600: "#3b3056",
+            700: "#635292",
+            800: "#9587bb",
+            900: "#cac3dd",
+          },
+          "base-100": {
+            DEFAULT: "#272932",
+            100: "#08080a",
+            200: "#0f1013",
+            300: "#17181d",
+            400: "#1f2027",
+            500: "#272932",
+            600: "#4b4f60",
+            700: "#71768f",
+            800: "#a0a4b4",
+            900: "#d0d1da",
+          },
+          error: {
+            DEFAULT: "#e55934",
+            100: "#321006",
+            200: "#63200d",
+            300: "#952f13",
+            400: "#c73f1a",
+            500: "#e55934",
+            600: "#ea7b5d",
+            700: "#ef9c85",
+            800: "#f4bdae",
+            900: "#faded6",
+          },
+          warning: {
+            DEFAULT: "#fab367",
+            100: "#442402",
+            200: "#894904",
+            300: "#cd6d06",
+            400: "#f89021",
+            500: "#fab367",
+            600: "#fbc284",
+            700: "#fcd1a3",
+            800: "#fde0c2",
+            900: "#fef0e0",
+          },
+          primary: {
+            DEFAULT: "#fdf500",
+            100: "#333100",
+            200: "#666300",
+            300: "#999400",
+            400: "#ccc500",
+            500: "#fdf500",
+            600: "#fff833",
+            700: "#fffa66",
+            800: "#fffc99",
+            900: "#fffdcc",
+          },
+          success: {
+            DEFAULT: "#2cf6b3",
+            100: "#023826",
+            200: "#05704c",
+            300: "#07a772",
+            400: "#09df98",
+            500: "#2cf6b3",
+            600: "#57f8c2",
+            700: "#81fad1",
+            800: "#abfbe1",
+            900: "#d5fdf0",
+          },
+          info: {
+            DEFAULT: "#37ebf3",
+            100: "#033538",
+            200: "#076b70",
+            300: "#0aa0a8",
+            400: "#0dd5e0",
+            500: "#37ebf3",
+            600: "#5deef6",
+            700: "#86f2f8",
+            800: "#aef6fa",
+            900: "#d7fbfd",
+          },
+          secondary: {
+            DEFAULT: "#9370db",
+            100: "#1b0d35",
+            200: "#351b6a",
+            300: "#50289f",
+            400: "#6c3bce",
+            500: "#9370db",
+            600: "#a98de2",
+            700: "#bfa9ea",
+            800: "#d4c6f1",
+            900: "#eae2f8",
+          },
+          accent: {
+            DEFAULT: "#cb1dcd",
+            100: "#280629",
+            200: "#510c52",
+            300: "#79127b",
+            400: "#a217a4",
+            500: "#cb1dcd",
+            600: "#e13ee3",
+            700: "#e86eea",
+            800: "#f09ff1",
+            900: "#f7cff8",
+          },
         },
       },
       "light",
@@ -94,5 +178,5 @@ module.exports = {
       "winter",
     ],
   },
-  plugins: [require("daisyui")],
+  plugins: [require("@tailwindcss/typography"), require("daisyui")],
 }

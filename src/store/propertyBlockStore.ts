@@ -1,5 +1,5 @@
 import { link } from "fs"
-import { PropertyBlock } from "src/core/components/PropertyBlock"
+import { PropertyBlock } from "src/core/components/editor/PropertyBlock"
 import { create } from "zustand"
 
 export type PropertyBlockType = {
@@ -58,6 +58,7 @@ export const usePropertyBlockStore = create<PropertyBlockState>((set, get) => {
   return {
     propertyBlocks: [],
     setPropertyBlocks: (propertyBlocks) => {
+      console.log("enterDebug: setting property blocks in propertyBlockStore", propertyBlocks)
       set((state) => ({
         propertyBlocks:
           typeof propertyBlocks === "function"

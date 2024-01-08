@@ -27,10 +27,12 @@ import { CharactersIcon } from "./icons/CharactersIcon"
 import { LocationsIcon } from "./icons/LocationsIcon"
 import { OutlineIcon } from "./icons/OutlineIcon"
 import { TimelineIcon } from "./icons/TimelineIcon"
+import { Camera, Trophy } from "lucide-react"
 
 export const Sidebar = () => {
   const [isExpanded, setIsExpanded] = useState(false)
-  const currentUser = useCurrentUser()
+  // this is causing a dynamic server usage error and not rendering the home page at all
+  // const currentUser = useCurrentUser()
 
   // Define a base class for your sidebar items
   const baseItemClass = "flex items-center space-x-4 px-4 py-3"
@@ -222,7 +224,9 @@ export const Sidebar = () => {
                 <li>
                   <a>
                     <ShowcaseIcon />
-                    Showcase
+                    {/* <Trophy color="primary" size={24} strokeWidth={1} /> */}
+                    {/* <Camera color="text-primary" size={24} /> */}
+                    Pool Room
                   </a>
                 </li>
                 <li>

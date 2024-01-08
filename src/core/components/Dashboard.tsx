@@ -9,9 +9,10 @@ export const Dashboard = ({ children }) => {
     // <main className="drawer-content">
     // <div className="grid grid-cols-12 grid-rows-[min-content] gap-y-12 p-4 lg:gap-x-12 lg:p-10">
     <>
-      <div className="stats stats-vertical h-auto m-4 col-span-12 w-full rounded-2xl justify-center items-center shadow-sm xl:stats-horizontal">
+      {/* <div className="stats stats-vertical h-auto col-span-12 w-full rounded-2xl justify-center items-center shadow-sm xl:stats-horizontal"> */}
+      <div className="stats stats-vertical h-auto col-span-12 w-full rounded-2xl items-center shadow-sm xl:stats-horizontal">
         {/* <span className="text-neutral">Dashboard</span> */}
-        <span className="stat text-neutral">{children}</span>
+        <span className="stat text-neutral-300">{children}</span>
       </div>
       {/* <!-- stats --> */}
       <section className="stats stats-vertical col-span-12 w-full shadow-sm xl:stats-horizontal">
