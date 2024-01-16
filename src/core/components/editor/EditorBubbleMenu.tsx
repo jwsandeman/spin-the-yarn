@@ -1,13 +1,13 @@
 import { Editor } from "@tiptap/core"
 import { BubbleMenu } from "@tiptap/react"
 import React from "react"
-import { BoldIcon } from "../icons/BoldIcon"
-import { ItalicIcon } from "../icons/ItalicIcon"
-import { StrikethroughIcon } from "../icons/StrikethroughIcon"
-import { UnderlineIcon } from "../icons/UnderlineIcon"
-import { HighlightIcon } from "../icons/HighlightIcon"
-import { CodeIcon } from "../icons/CodeIcon"
-import { LinkIcon } from "../icons/LinkIcon"
+import { BoldIcon } from "../iconPaths/BoldIcon"
+import { ItalicIcon } from "../iconPaths/ItalicIcon"
+import { StrikethroughIcon } from "../iconPaths/StrikethroughIcon"
+import { UnderlineIcon } from "../iconPaths/UnderlineIcon"
+import { HighlightIcon } from "../iconPaths/HighlightIcon"
+import { CodeIcon } from "../iconPaths/CodeIcon"
+import { LinkIcon } from "../iconPaths/LinkIcon"
 
 type Props = {
   editor: Editor

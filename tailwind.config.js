@@ -14,8 +14,14 @@ module.exports = {
       boxShadow: {
         neumorphic: `4px 4px 6px 0 rgba(253, 245, 0, 0.1), -4px -4px 6px 0 rgba(147, 112, 219, 0.7)`, // Direct RGB values from your mycyberpunk theme
       },
+      maxHeight: {
+        "1/3-screen": "33vh",
+      },
     },
   },
+
+  plugins: [require("@tailwindcss/typography"), require("daisyui")],
+
   daisyui: {
     themes: [
       {
@@ -178,5 +184,4 @@ module.exports = {
       "winter",
     ],
   },
-  plugins: [require("@tailwindcss/typography"), require("daisyui")],
 }

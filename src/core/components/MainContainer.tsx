@@ -1,7 +1,7 @@
 import React from "react"
 import { Dashboard } from "./Dashboard"
 import { Sidebar } from "./Sidebar"
-import { Navbar } from "./Navbar"
+import { Navbar } from "./Navbar/Navbar"
 
 export const MainContainer = ({ children }) => {
   return (
@@ -20,6 +20,7 @@ export const MainContainer = ({ children }) => {
           {/* <span className="text-neutral">{children}</span> */}
           {/* </div> */}
           <Dashboard>{children}</Dashboard>
+          {/* {children} */}
         </div>
       </div>
     </div>

@@ -1,10 +1,19 @@
+import { SVGProps } from "react"
 import { LinkedPropertyBlockType, PropertyBlockType } from "src/store/propertyBlockStore"
 
 export type IconProps = {
-  className?: string
-  size?: number
+  iconPath: SVGProps<SVGSVGElement>
+  href?: string
+  buttonClass?: string
+  buttonSize?: string
+  buttonShape?: string
+  iconClass?: string
+  iconColor?: string
+  iconSize?: number
   fill?: string
   strokeWidth?: string
+  isLink?: boolean
+  isButton?: boolean
 }
 
 export type EditorProps = {
