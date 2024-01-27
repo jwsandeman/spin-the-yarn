@@ -2,34 +2,34 @@ import React from "react"
 import { ChallengesIcon } from "../iconPaths/ChallengesIcon"
 import { Icon } from "../Icon"
 import { ExploreIcon } from "../iconPaths/ExploreIcon"
-import { LatestIcon } from "../iconPaths/LatestIcon"
 import { NewsfeedIcon } from "../iconPaths/NewsfeedIcon"
+import { CommunityIcon } from "../iconPaths/CommunityIcon"
 
 type Props = {}
 
-export const NewsfeedDropdown = (props: Props) => {
+export const CommunityDropdown = (props: Props) => {
   return (
     <li>
       <details>
         <summary>
           <Icon
-            iconPath={<NewsfeedIcon />}
+            iconPath={<CommunityIcon />}
             isLink={false}
             iconColor="text-primary"
             isButton={false}
           />
-          Newsfeed
+          Community
         </summary>
         <ul>
           <li>
             <a>
               <Icon
-                iconPath={<LatestIcon />}
+                iconPath={<NewsfeedIcon />}
                 isLink={false}
                 iconColor="text-primary"
                 isButton={false}
               />
-              Latest
+              Newsfeed
             </a>
           </li>
           <li>

@@ -11,6 +11,7 @@ import { EditorContainer } from "src/core/components/editor/EditorContainer"
 import { useCurrentUser } from "src/users/hooks/useCurrentUser"
 import styles from "src/styles/Home.module.css"
 import logout from "src/auth/mutations/logout"
+import { List } from "src/core/components/Dashboard/List"
 
 const ITEMS_PER_PAGE = 100
 
@@ -30,7 +31,8 @@ export const NotesList = () => {
 
   return (
     <div>
-      <ul>
+      <List type="Notes" elements={notes} />
+      {/* <ul>
         {notes.map((note) => (
           <li key={note.id}>
             <Link href={Routes.ShowNotePage({ userId: userId!, noteId: note.id })}>
@@ -38,52 +40,16 @@ export const NotesList = () => {
             </Link>
           </li>
         ))}
-      </ul>
+      </ul> */}
 
-      <button disabled={page === 0} onClick={goToPreviousPage}>
+      {/* <button disabled={page === 0} onClick={goToPreviousPage}>
         Previous
       </button>
       <button disabled={!hasMore} onClick={goToNextPage}>
         Next
-      </button>
+      </button> */}
     </div>
   )
-}
-
-const UserInfo = () => {
-  const currentUser = useCurrentUser()
-  const [logoutMutation] = useMutation(logout)
-
-  if (currentUser) {
-    return (
-      <>
-        <button
-          className={styles.button}
-          onClick={async () => {
-            await logoutMutation()
-          }}
-        >
-          Logout
-        </button>
-        <div>
-          User id: <code>{currentUser.id}</code>
-          <br />
-          User role: <code>{currentUser.role}</code>
-        </div>
-      </>
-    )
-  } else {
-    return (
-      <>
-        <Link href={Routes.SignupPage()} className={styles.button}>
-          <strong>Sign Up</strong>
-        </Link>
-        <Link href={Routes.LoginPage()} className={styles.loginButton}>
-          <strong>Login</strong>
-        </Link>
-      </>
-    )
-  }
 }
 
 const NotesPage = () => {
@@ -98,19 +64,15 @@ const NotesPage = () => {
       <Head>
         <title className="bg-blue">Notes</title>
       </Head>
-      {/* <div className="bg-green-100 text-green-500"> */}
-      <div className="">
-        {/* <p>
-          <Link href={Routes.NewNotePage({ userId: userId })}>Create Note</Link>
-        </p> */}
-        <Suspense fallback={<div>Loading Notes...</div>}>
-          <Suspense fallback="Loading...">
-            <UserInfo />
-          </Suspense>
-          {/* <NotesList /> */}
-          <EditorContainer element={note} />
-        </Suspense>
-      </div>
+      <Suspense fallback={<div>Loading Notes...</div>}>
+        <section className="stats stats-vertical col-span-12 w-full shadow-sm xl:stats-horizontal">
+          {/* <div className="stat"> */}
+          {/* <h1>Note 1</h1> */}
+          {/* <EditorContainer element={note} /> */}
+          <NotesList />
+          {/* </div> */}
+        </section>
+      </Suspense>
     </Layout>
   )
 }
