@@ -1,36 +1,22 @@
 import React, { useState } from "react"
-import { Routes } from "@blitzjs/next"
-import { useCurrentUser } from "src/users/hooks/useCurrentUser"
+import { Routes, useParam } from "@blitzjs/next"
 import { SpinTheYarnIcon } from "./iconPaths/SpinTheYarnIcon"
 import { HomeIcon } from "./iconPaths/HomeIcon"
 import { NotesIcon } from "./iconPaths/NotesIcon"
 import { ProfileIcon } from "./iconPaths/ProfileIcon"
-import { PoolRoomIcon } from "./iconPaths/PoolRoomIcon"
-import { BookCaseIcon } from "./iconPaths/BookCaseIcon"
-import { ChaptersIcon } from "./iconPaths/ChaptersIcon"
 import { CommunityIcon } from "./iconPaths/CommunityIcon"
-import { NewsfeedIcon } from "./iconPaths/NewsfeedIcon"
-import { ExploreIcon } from "./iconPaths/ExploreIcon"
-import { ChallengesIcon } from "./iconPaths/ChallengesIcon"
 import { ProjectsIcon } from "./iconPaths/ProjectsIcon"
 import { TasksIcon } from "./iconPaths/TasksIcon"
 import { ChatIcon } from "./iconPaths/ChatIcon"
 import { GoalsIcon } from "./iconPaths/GoalsIcon"
-import { BookIcon } from "./iconPaths/BookIcon"
-import { WorldbuildingIcon } from "./iconPaths/WorldbuildingIcon"
-import { EventsIcon } from "./iconPaths/EventsIcon"
-import { CharactersIcon } from "./iconPaths/CharactersIcon"
-import { LocationsIcon } from "./iconPaths/LocationsIcon"
-import { TimelineIcon } from "./iconPaths/TimelineIcon"
 import { Icon } from "./Icon"
-import { OutlineIcon } from "./iconPaths/OutlineIcon"
 import { GuidesIcon } from "./iconPaths/GuidesIcon"
-import { ProfileDropdown } from "./Sidebar/ProfileDropdown"
-import { CommunityDropdown } from "./Sidebar/CommunityDropdown"
-import { ProjectsDropdown } from "./Sidebar/ProjectsDropdown"
 import { SettingsIcon } from "./iconPaths/SettingsIcon"
+import Link from "next/link"
 
 export const Sidebar = () => {
+  const userId = useParam("userId", "number")
+
   return (
     <>
       <div className="sidebar flex group min-h-screen w-20 overflow-hidden hover:w-56 hover:bg-base-100">
@@ -65,7 +51,10 @@ export const Sidebar = () => {
                 </a>
               </li>
               <li className="relative flex items-center justify-center w-20 h-12 group ">
-                <a className="group space-x-4 rounded-xl px-4 py-3">
+                <Link
+                  href={{ ...Routes.ProfilesPage({ userId: userId! }) }}
+                  className="group space-x-4 rounded-xl px-4 py-3"
+                >
                   <Icon
                     iconPath={<ProfileIcon />}
                     isLink={false}
@@ -75,10 +64,13 @@ export const Sidebar = () => {
                   <span className="absolute min-w-max left-16 hidden group-hover:flex  text-base tracking-wide">
                     Profile
                   </span>
-                </a>
+                </Link>
               </li>
               <li className="relative flex items-center justify-center w-20 h-12 group">
-                <a className="group space-x-4 rounded-xl px-4 py-3">
+                <Link
+                  href={Routes.CommunitiesPage({ userId: userId! })}
+                  className="group space-x-4 rounded-xl px-4 py-3"
+                >
                   <Icon
                     iconPath={<CommunityIcon />}
                     isLink={false}
@@ -88,10 +80,13 @@ export const Sidebar = () => {
                   <span className="absolute min-w-max left-16 hidden group-hover:flex text-base tracking-wide">
                     Community
                   </span>
-                </a>
+                </Link>
               </li>
               <li className="relative flex items-center justify-center w-20 h-12 group ">
-                <a className="group space-x-4 rounded-xl px-4 py-3">
+                <Link
+                  href={Routes.ProjectsPage({ userId: userId! })}
+                  className="group space-x-4 rounded-xl px-4 py-3"
+                >
                   <Icon
                     iconPath={<ProjectsIcon />}
                     isLink={false}
@@ -101,10 +96,13 @@ export const Sidebar = () => {
                   <span className="absolute min-w-max left-16 hidden group-hover:flex  text-base tracking-wide">
                     Projects
                   </span>
-                </a>
+                </Link>
               </li>
               <li className="relative flex items-center justify-center w-20 h-12 group">
-                <a className="group space-x-4 rounded-xl px-4 py-3">
+                <Link
+                  href={Routes.NotesPage({ userId: userId! })}
+                  className="group space-x-4 rounded-xl px-4 py-3"
+                >
                   <Icon
                     iconPath={<NotesIcon />}
                     isLink={false}
@@ -114,7 +112,7 @@ export const Sidebar = () => {
                   <span className="absolute min-w-max left-16 hidden group-hover:flex text-base tracking-wide">
                     Notes
                   </span>
-                </a>
+                </Link>
               </li>
               <li className="relative flex items-center justify-center w-20 h-12 group ">
                 <a className="group space-x-4 rounded-xl px-4 py-3">
